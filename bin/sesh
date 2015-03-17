@@ -1,18 +1,19 @@
 #!/usr/bin/env ruby
 
 if ARGV.include? '-h' or ARGV.include? '--help' then puts <<-HELP
-Run a headless tmuxinator session for remote slave machines to connect to.
+Sesh: remote background sessions powered by tmux and tmuxinator.
+Runs a headless tmuxinator session for remote slave machines to connect to.
 
-Usage: #{File.basename $0} [command]
+Usage: #{File.basename $0} [command] [project]
 
 Commands:
 
-rmux new                          Create a new tmuxinator configuration.
-rmux start [project_name]         Start an rmux session for a project.
-rmux stop  [project_name]         Stop an rmux session for a project.
-rmux list                         List running rmux sessions on this machine.
-rmux connect [project] user@host  Connect as a slave to a remote rmux session.
-rmux enslave [project] user@host  Connect a slave to a local rmux session.
+sesh new                          Create a new tmuxinator configuration.
+sesh start [project_name]         Start a Sesh session for a project.
+sesh stop  [project_name]         Stop a Sesh session for a project.
+sesh list                         List running Sesh sessions on this machine.
+sesh connect [project] user@host  Connect as a slave to a remote Sesh session.
+sesh enslave [project] user@host  Connect a slave to a local Sesh session.
 
 HELP
 exit; end
@@ -22,7 +23,7 @@ def fatal(msg) $stderr.puts msg; $stderr.puts; exit 1 end
 def debug(msg) $stderr.puts "> #{msg}" end
 
 @command = ARGV[0]
-@options = ARGV[1..-1]
+@options = ARGV[1..-1] || []
 # debug("Options received: #{@options}") if @options.any?
 
 def get_project_name
@@ -108,38 +109,38 @@ end
 if @command
   case @command
   when 'start'
-    fatal("Rmux project '#{@project_name}' is already running!") if already_running?
-    debug "Starting rmux project '#{@project_name}'..."
+    fatal("Sesh project '#{@project_name}' is already running!") if already_running?
+    debug "Starting Sesh project '#{@project_name}'..."
     output = issue_server_start_command!
     success = show_progress_until ->{ already_running? }
     if success
       sleep 1
       if $? && already_running?
-        debug 'Rmux started successfully.'
+        debug 'Sesh started successfully.'
         debug "To connect: #{connection_command}"
         puts
       else
-        fatal 'Rmux failed to start!'
+        fatal 'Sesh failed to start!'
       end
     else
-      fatal 'Rmux failed to start after ten seconds!'
+      fatal 'Sesh failed to start after ten seconds!'
     end
   when 'stop'
-    fatal("Rmux project '#{@project_name}' is not running!") unless already_running?
-    debug "Stopping rmux project '#{@project_name}'..."
+    fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
+    debug "Stopping Sesh project '#{@project_name}'..."
     output = issue_server_stop_command!
     success = show_progress_until ->{ !already_running? }
     if success && $?
-      debug 'Rmux stopped successfully.'
+      debug 'Sesh stopped successfully.'
       puts
     else
-      fatal 'Rmux failed to stop after ten seconds!'
+      fatal 'Sesh failed to stop after ten seconds!'
     end
   when 'restart'
-    fatal("Rmux project '#{@project_name}' is not running!") unless already_running?
-    puts `rmux stop #{@project_name} #{@options if @options.any?}`.strip
+    fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
+    puts `sesh stop #{@project_name} #{@options if @options.any?}`.strip
     sleep(0.5)
-    puts `rmux start #{@project_name} #{@options if @options.any?}`.strip
+    puts `sesh start #{@project_name} #{@options if @options.any?}`.strip
   when 'new'
     command = "env EDITOR='vim' tmuxinator new #{@project_name}"
     output = exec command
@@ -156,31 +157,31 @@ if @command
       puts running_projects
       puts
     else
-      fatal "There are no rmux projects currently running."
+      fatal "There are no Sesh projects currently running."
     end
   when 'connect'
     slave_address = @options[0]
     if (is_local=slave_address.nil?)
       slave_address = @local_ssh_addr
-      fatal("Rmux project '#{@project_name}' is not running!") unless already_running?
+      fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
     end
     command = enter_slave_mode_command(is_local)
     puts command
     puts `#{command}`.strip
   when 'enslave'
-    fatal("Rmux project '#{@project_name}' is not running!") unless already_running?
+    fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
     fatal("You must specify a machine to enslave! Eg: user@ip") unless @options.any?
     slave_address = @options[0]
-    debug "Attempting to connect #{slave_address} to rmux project '#{@project_name}'..."
+    debug "Attempting to connect #{slave_address} to Sesh project '#{@project_name}'..."
     output = format_and_run_command <<-BASH
       ssh #{slave_address} "#{enter_slave_mode_command.gsub('"', '\"')}"
     BASH
     puts output
     if $?
-      debug "Rmux client connected successfully."
+      debug "Sesh client connected successfully."
       puts
     else
-      fatal 'Rmux client failed to start.'
+      fatal 'Sesh client failed to start.'
     end
   else
     fatal "Command not recognized!"
