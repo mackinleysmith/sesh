@@ -28,19 +28,19 @@ def debug(msg) $stderr.puts "> #{msg}" end
 @options = ARGV[1..-1] || []
 # debug("Options received: #{@options}") if @options.any?
 
+def is_tmuxinator_project?(name)
+  path = File.expand_path("~/.tmuxinator/#{name}.yml")
+  File.exist? path
+end
+
 def get_project_name
-  if @options.any?
-    pn_opt = if %w(connect enslave).include? @command
-               @options.shift if @options[1]
-             else
-               @options[0] 
-             end
-    if pn_opt
-      pn_opt_path = File.expand_path("~/.tmuxinator/#{pn_opt}.yml")
-      return pn_opt if File.exist? pn_opt_path
-    end
+  if @options.any? && !@options[0].include?('@')
+    return @options.shift if is_tmuxinator_project? @options[0]
   end
-  `printf '%q\n' "${PWD##*/}"`.strip
+  output = `printf '%q\n' "${PWD##*/}"`.strip
+  return output if is_tmuxinator_project?(output)
+  puts "Sesh project '#{output}' could not be found."
+  fatal "Hint: run sesh new or specify an existing project after your commmand."
 end
 @project_name = get_project_name
 
@@ -53,6 +53,16 @@ end
 @local_ssh_addr = "#{get_local_username}@#{get_local_hostname}"
 
 @socket = "/tmp/#{@project_name}.sock"
+
+def get_remote_address
+  @options[@options.length>1 ? 1:0] if @options.any?
+end
+@remote_address = get_remote_address
+
+def get_term_app
+  output = `osascript -e 'try' -e 'get exists application "iTerm"' -e 'end try'`.strip
+  output.length > 0 ? 'iTerm' : fatal("iTerm 2 is not installed.") # 'Terminal'
+end
 
 def project_name_matcher
   pn = @project_name.gsub '-', '\-'
@@ -68,7 +78,7 @@ def format_command(command) command.gsub(/\ [ ]+/, ' ').strip end
 def format_and_run_command(command) `#{format_command(command)}`.strip end
 
 def issue_server_start_command!
-  `tmux -vvvv -S "#{@socket}" new-session -d "env TMUX='' mux start #{@project_name}"`
+  `tmux -S "#{@socket}" new-session -d "env TMUX='' mux start #{@project_name}"`
 end
 
 def issue_server_stop_command!
@@ -82,17 +92,24 @@ def connection_command(local=false)
 end
 
 def enter_slave_mode_command(local=false)
-  tell_iterm_app     = 'tell application "iTerm"'
-  tell_iterm_process = 'tell application "System Events" to tell process "iTerm"'
-  format_command <<-BASH
-    osascript \
-          -e '#{tell_iterm_app} to activate' \
-          -e '#{tell_iterm_process} to keystroke \"n\" using command down' \
-          -e 'delay 1' \
-          -e '#{tell_iterm_app} to tell session -1 of current terminal to \
-              write text "#{connection_command(local).gsub("'", '\\\\\'')}"' \
-          -e '#{tell_iterm_process} to keystroke return using command down'
-  BASH
+  @term_app ||= get_term_app
+  case @term_app
+  when 'iTerm'
+    tell_term_app     = 'tell application "' + @term_app + '"'
+    tell_term_process = 'tell application "System Events" to tell process "' + 
+                         @term_app + '"'
+    format_command <<-BASH
+      osascript \
+            -e '#{tell_term_app} to activate' \
+            -e '#{tell_term_process} to keystroke \"n\" using command down' \
+            -e 'delay 1' \
+            -e "#{tell_term_app.gsub('"', '\\"')} to tell session -1 of current \
+                terminal to write text \\"#{connection_command(local)}\\"" \
+            -e '#{tell_term_process} to keystroke return using command down'
+    BASH
+  when 'Terminal'
+    format_command connection_command(local)
+  end
 end
 
 def show_progress_until(condition_lambda, timeout=10)
@@ -162,21 +179,19 @@ if @command
       fatal "There are no Sesh projects currently running."
     end
   when 'connect'
-    slave_address = @options[0]
-    if (is_local=slave_address.nil?)
-      slave_address = @local_ssh_addr
+    if (is_local=@remote_address.nil?)
+      @remote_address = @local_ssh_addr
       fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
     end
     command = enter_slave_mode_command(is_local)
-    puts command
     puts `#{command}`.strip
   when 'enslave'
     fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
-    fatal("You must specify a machine to enslave! Eg: user@ip") unless @options.any?
-    slave_address = @options[0]
-    debug "Attempting to connect #{slave_address} to Sesh project '#{@project_name}'..."
+    fatal("You must specify a machine to enslave! Eg: user@ip") if @remote_address.nil?
+    debug "Attempting to connect #{@remote_address} to Sesh project '#{@project_name}'..."
+      # ssh #{@remote_address} "#{enter_slave_mode_command.gsub(/([^\\])"/, '\1\\"')}"
     output = format_and_run_command <<-BASH
-      ssh #{slave_address} "#{enter_slave_mode_command.gsub('"', '\"')}"
+      #{enter_slave_mode_command} | ssh -T #{@remote_address} 1>/dev/null 2>&1 &
     BASH
     puts output
     if $?
