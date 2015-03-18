@@ -35,6 +35,7 @@ def is_tmuxinator_project?(name)
 end
 
 def get_project_name
+  return if @command == 'list'
   new_project = @command == 'new'
   if @options.any? && !@options[0].include?('@')
     return @options.shift if new_project || is_tmuxinator_project?(@options[0])
