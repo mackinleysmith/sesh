@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'tmuxinator'
 
 if ARGV.empty? or ARGV.include? '-h' or ARGV.include? '--help' then puts <<-HELP
 Sesh: remote background sessions powered by tmux and tmuxinator.
@@ -34,11 +35,12 @@ def is_tmuxinator_project?(name)
 end
 
 def get_project_name
+  new_project = @command == 'new'
   if @options.any? && !@options[0].include?('@')
-    return @options.shift if is_tmuxinator_project? @options[0]
+    return @options.shift if new_project || is_tmuxinator_project?(@options[0])
   end
   output = `printf '%q\n' "${PWD##*/}"`.strip
-  return output if is_tmuxinator_project?(output)
+  return output if new_project || is_tmuxinator_project?(output)
   puts "Sesh project '#{output}' could not be found."
   fatal "Hint: run sesh new or specify an existing project after your commmand."
 end
@@ -161,8 +163,20 @@ if @command
     sleep(0.5)
     puts `sesh start #{@project_name} #{@options if @options.any?}`.strip
   when 'new'
-    command = "env EDITOR='vim' tmuxinator new #{@project_name}"
-    output = exec command
+    name = @project_name
+    config = Tmuxinator::Config.project(name)
+
+    unless Tmuxinator::Config.exists?(name)
+      template = File.join(File.dirname(File.expand_path(__FILE__)), "../lib/sesh/assets/sample.yml")
+      erb  = Erubis::Eruby.new(File.read(template)).result(binding)
+      File.open(config, "w") { |f| f.write(erb) }
+    end
+
+    editor = `echo $EDITOR`.strip
+    editor = 'vim' unless editor.length > 0
+    Kernel.system("#{editor} #{config}") || Tmuxinator::Cli.new.doctor
+    # command = "env EDITOR='vim' tmuxinator new #{@project_name}"
+    # output = exec command
     puts
   when 'list'
     output = format_and_run_command <<-BASH
