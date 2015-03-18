@@ -9,12 +9,12 @@ Usage: #{File.basename $0} command [project]
 
 Commands:
 
-sesh new                          Create a new tmuxinator configuration.
-sesh start [project]              Start a Sesh session for a project.
-sesh stop  [project]              Stop a Sesh session for a project.
-sesh list                         List running Sesh sessions on this machine.
-sesh connect [project] user@host  Connect as a slave to a remote Sesh session.
-sesh enslave [project] user@host  Connect a slave to a local Sesh session.
+sesh new                           Create a new tmuxinator configuration.
+sesh start [project]               Start a Sesh session for a project.
+sesh stop  [project]               Stop a Sesh session for a project.
+sesh list                          List running Sesh sessions on this machine.
+sesh enslave [project] user@host   Connect a slave to a local Sesh session.
+sesh connect [project] [user@host] Connect as a slave to a Sesh session.
 
 Leave project blank to use the name of your current directory.
 
@@ -29,24 +29,6 @@ def debug(msg) $stderr.puts "> #{msg}" end
 @options = ARGV[1..-1] || []
 # debug("Options received: #{@options}") if @options.any?
 
-def is_tmuxinator_project?(name)
-  path = File.expand_path("~/.tmuxinator/#{name}.yml")
-  File.exist? path
-end
-
-def get_project_name
-  return if @command == 'list'
-  new_project = @command == 'new'
-  if @options.any? && !@options[0].include?('@')
-    return @options.shift if new_project || is_tmuxinator_project?(@options[0])
-  end
-  output = `printf '%q\n' "${PWD##*/}"`.strip
-  return output if new_project || is_tmuxinator_project?(output)
-  puts "Sesh project '#{output}' could not be found."
-  fatal "Hint: run sesh new or specify an existing project after your commmand."
-end
-@project_name = get_project_name
-
 def get_local_username
   `echo $USER`.strip
 end
@@ -54,6 +36,22 @@ def get_local_hostname
   `scutil --get LocalHostName`.strip.downcase + '.local'
 end
 @local_ssh_addr = "#{get_local_username}@#{get_local_hostname}"
+
+def get_project_name
+  return if @command == 'list'
+  new_project = @command == 'new'
+  remote_project = @command == 'connect' && @options.select{|o| o.include? '@' }.any?
+  if @options.any? && !@options[0].include?('@')
+    return @options.shift if new_project || remote_project || 
+                             Tmuxinator::Config.exists?(@options[0])
+  end
+  output = `printf '%q\n' "${PWD##*/}"`.strip
+  return output if new_project || Tmuxinator::Config.exists?(output)
+  puts "Sesh project '#{output}' could not be found."
+  fatal "Hint: run sesh new or specify an existing project after your commmand."
+end
+@project_name = get_project_name
+
 
 @socket = "/tmp/#{@project_name}.sock"
 
@@ -204,10 +202,12 @@ if @command
     fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
     fatal("You must specify a machine to enslave! Eg: user@ip") if @remote_address.nil?
     debug "Attempting to connect #{@remote_address} to Sesh project '#{@project_name}'..."
-      # ssh #{@remote_address} "#{enter_slave_mode_command.gsub(/([^\\])"/, '\1\\"')}"
+    # ssh #{@remote_address} "#{enter_slave_mode_command.gsub(/([^\\])"/, '\1\\"')}"
+    # puts <<-BASH
     output = format_and_run_command <<-BASH
-      #{enter_slave_mode_command} | ssh -T #{@remote_address} 1>/dev/null 2>&1 &
+      ssh #{@remote_address} "sesh connect #{@project_name} #{@local_ssh_addr}" 
     BASH
+  #  1>/dev/null 2>&1 &
     puts output
     if $?
       debug "Sesh client connected successfully."
