@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'sesh'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.date        = '2015-03-17'
   s.summary     = "Sesh"
   s.description = "Remote background sessions powered by tmux and tmuxinator."
