@@ -10,8 +10,9 @@ Usage: #{File.basename $0} command [project]
 Commands:
 
 sesh new                           Create a new tmuxinator configuration.
-sesh start [project]               Start a Sesh session for a project.
-sesh stop  [project]               Stop a Sesh session for a project.
+sesh edit    [project]             Edit an existing tmuxinator configuration.
+sesh start   [project]             Start a Sesh session for a project.
+sesh stop    [project]             Stop a Sesh session for a project.
 sesh list                          List running Sesh sessions on this machine.
 sesh enslave [project] user@host   Connect a slave to a local Sesh session.
 sesh connect [project] [user@host] Connect as a slave to a Sesh session.
@@ -53,7 +54,8 @@ end
 @project_name = get_project_name
 
 
-@socket = "/tmp/#{@project_name}.sock"
+@socket_file = "/tmp/#{@project_name}.sock"
+@pids_file   = "/tmp/#{@project_name}.pids.txt"
 
 def get_remote_address
   @options[@options.length>1 ? 1:0] if @options.any?
@@ -63,6 +65,12 @@ end
 def get_term_app
   output = `osascript -e 'try' -e 'get exists application "iTerm"' -e 'end try'`.strip
   output.length > 0 ? 'iTerm' : fatal("iTerm 2 is not installed.") # 'Terminal'
+end
+
+def get_editor
+  editor = `echo $EDITOR`.strip
+  editor = 'vim' unless editor.length > 0
+  editor
 end
 
 def project_name_matcher
@@ -79,20 +87,21 @@ def format_command(command) command.gsub(/\ [ ]+/, ' ').strip end
 def format_and_run_command(command) `#{format_command(command)}`.strip end
 
 def issue_server_start_command!
-  `tmux -S "#{@socket}" new-session -d "env TMUX='' mux start #{@project_name}"`
+  `tmux -S "#{@socket_file}" new-session -d "env TMUX='' mux start #{@project_name}"`
 end
 
 def issue_server_stop_command!
   `pkill -f "#{project_name_matcher}"`
 end
 
-def connection_command(local=false)
-  local_command = "tmux -S #{@socket} a"
+def connection_command(local=false, addr=nil)
+  addr ||= @local_ssh_addr
+  local_command = "tmux -S #{@socket_file} a"
   return local_command if local
-  "ssh #{@local_ssh_addr} -t '#{local_command}'"
+  "ssh #{addr} -t '#{local_command}'"
 end
 
-def enter_slave_mode_command(local=false)
+def enter_slave_mode_command(local=false, addr=nil)
   @term_app ||= get_term_app
   case @term_app
   when 'iTerm'
@@ -105,11 +114,11 @@ def enter_slave_mode_command(local=false)
             -e '#{tell_term_process} to keystroke \"n\" using command down' \
             -e 'delay 1' \
             -e "#{tell_term_app.gsub('"', '\\"')} to tell session -1 of current \
-                terminal to write text \\"#{connection_command(local)}\\"" \
+                terminal to write text \\"#{connection_command(local, addr)}\\"" \
             -e '#{tell_term_process} to keystroke return using command down'
     BASH
   when 'Terminal'
-    format_command connection_command(local)
+    format_command connection_command(local, addr)
   end
 end
 
@@ -126,18 +135,33 @@ def show_progress_until(condition_lambda, timeout=10)
   return condition_lambda.call
 end
 
+def kill_running_processes
+  if File.exists? @pids_file
+    File.readlines(@pids_file).each{|pid| kill_process! pid }
+    File.delete @pids_file
+  end
+end
+def kill_process!(pid)
+  `kill -9 #{pid}`
+end
+
 if @command
   case @command
   when 'start'
     fatal("Sesh project '#{@project_name}' is already running!") if already_running?
     debug "Starting Sesh project '#{@project_name}'..."
+    kill_running_processes
     output = issue_server_start_command!
     success = show_progress_until ->{ already_running? }
     if success
       sleep 1
       if $? && already_running?
+        pids = `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" | grep -v tmux | awk '{print $1}'`.strip.lines
+        File.open(@pids_file, 'w') {|f| pids.each{|pid| f.puts pid } }
         debug 'Sesh started successfully.'
         debug "To connect: #{connection_command}"
+        # TODO: show other sesh commands (connect, enslave), specify full
+        #       command as what is needed for machines without sesh.
         puts
       else
         fatal 'Sesh failed to start!'
@@ -148,6 +172,7 @@ if @command
   when 'stop'
     fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
     debug "Stopping Sesh project '#{@project_name}'..."
+    kill_running_processes
     output = issue_server_stop_command!
     success = show_progress_until ->{ !already_running? }
     if success && $?
@@ -171,12 +196,16 @@ if @command
       File.open(config, "w") { |f| f.write(erb) }
     end
 
-    editor = `echo $EDITOR`.strip
-    editor = 'vim' unless editor.length > 0
-    Kernel.system("#{editor} #{config}") || Tmuxinator::Cli.new.doctor
-    # command = "env EDITOR='vim' tmuxinator new #{@project_name}"
-    # output = exec command
+    Kernel.system("#{get_editor} #{config}") || Tmuxinator::Cli.new.doctor
     puts
+  when 'edit'
+    config = Tmuxinator::Config.project(@project_name)
+    if Tmuxinator::Config.exists? @project_name
+      Kernel.system("#{get_editor} #{config}") || Tmuxinator::Cli.new.doctor
+      puts
+    else
+      fatal "Sesh project '#{@project_name}' does not exist yet!"
+    end
   when 'list'
     output = format_and_run_command <<-BASH
       ps aux | grep tmux | grep "env TMUX='' mux start" \
@@ -192,11 +221,12 @@ if @command
       fatal "There are no Sesh projects currently running."
     end
   when 'connect'
+    addr = @remote_address
     if (is_local=@remote_address.nil?)
-      @remote_address = @local_ssh_addr
+      addr = @local_ssh_addr
       fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
     end
-    command = enter_slave_mode_command(is_local)
+    command = enter_slave_mode_command(is_local, addr)
     puts `#{command}`.strip
   when 'enslave'
     fatal("Sesh project '#{@project_name}' is not running!") unless already_running?
