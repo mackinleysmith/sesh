@@ -20,6 +20,10 @@ module Sesh
         # TODO: support more platforms
       end
     end
+    def self.infer_default_editor
+      if OS.windows? then 'notepad.exe'
+      else o = `echo $EDITOR`.strip; o = 'vim' unless o.length > 0; o end
+    end
 
     module OS
       def OS.windows?
