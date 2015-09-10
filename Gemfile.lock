@@ -1,0 +1,47 @@
+PATH
+  remote: .
+  specs:
+    sesh (0.0.8)
+      awesome_print
+      colorize
+      deep_merge
+      tmuxinator (~> 0.6.9)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    awesome_print (1.6.1)
+    colorize (0.7.7)
+    deep_merge (1.0.1)
+    diff-lcs (1.2.5)
+    erubis (2.7.0)
+    rake (10.4.2)
+    rspec (3.3.0)
+      rspec-core (~> 3.3.0)
+      rspec-expectations (~> 3.3.0)
+      rspec-mocks (~> 3.3.0)
+    rspec-core (3.3.2)
+      rspec-support (~> 3.3.0)
+    rspec-expectations (3.3.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.3.0)
+    rspec-mocks (3.3.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.3.0)
+    rspec-support (3.3.0)
+    thor (0.19.1)
+    tmuxinator (0.6.11)
+      erubis (~> 2.6)
+      thor (~> 0.19, >= 0.15.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.10)
+  rake (~> 10.0)
+  rspec
+  sesh!
+
+BUNDLED WITH
+   1.10.5
