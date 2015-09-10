@@ -1,4 +1,3 @@
 #!/usr/bin/env ruby
 require 'sesh'
-# require 'sesh/cli'
 Sesh::Cli.start
