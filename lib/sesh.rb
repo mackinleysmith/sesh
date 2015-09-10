@@ -1,8 +1,12 @@
 require 'sesh/version'
-require 'sesh/inferences'
+require 'sesh/logger'
+# require 'sesh/inferences'
+# require 'sesh/cli'
 
 module Sesh
-  include Sesh::Inferences
+  # autoload Logger, 'sesh/logger'
+  autoload Inferences, 'sesh/inferences'
+  autoload Cli, 'sesh/cli'
   # Your code goes here...
   
 end

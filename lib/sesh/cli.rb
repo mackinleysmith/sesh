@@ -1,4 +1,10 @@
 require 'sesh'
+require 'tmuxinator'
+require 'optparse'
+require 'yaml'
+require 'colorize'
+require 'open3'
+require 'deep_merge'
 
 module Sesh
   class Cli
@@ -52,15 +58,6 @@ module Sesh
       #
       # Logging Methods
       #
-      def debug(msg) $stderr.puts "> #{msg}" end
-      def fatal(msg)
-        $stderr.puts msg.red; $stderr.puts; exit 1 end
-      def warn(msg, nest_level=0)
-        $stderr.puts "#{' ' * nest_level * 2}> #{msg}".yellow end
-      def log_info(msg, nest_level=0)
-        $stdout.puts "#{' ' * nest_level * 2}> #{msg}".blue end
-      def log_success(msg, nest_level=0)
-        $stdout.puts "#{' ' * nest_level * 2}> #{msg}".green end
 
       #
       # Helper methods
@@ -163,8 +160,8 @@ module Sesh
             break end } if project_required && ARGV.any?
         @options[:project] ||= Sesh::Inferences.infer_project_from_current_directory
         if project_required && @options[:project].nil?
-          warn 'A matching Sesh project could not be found.'
-          fatal 'Hint: run sesh new or specify an existing project with your commmand.'
+          Logger.warn 'A matching Sesh project could not be found.'
+          Logger.fatal 'Hint: run sesh new or specify an existing project with your commmand.'
         end
       end
       @options[:tmux][:socket_file] ||= "/tmp/#{@options[:project]}.sock"
@@ -177,14 +174,14 @@ module Sesh
             break end } if ARGV.any?
         if @options[:ssh][:remote_addr].nil?
           if %w(enslave run rspec).include? @command
-            warn 'A remote address is required.'
-            fatal 'Hint: specify a remote ssh address using the -R flag.'
+            Logger.warn 'A remote address is required.'
+            Logger.fatal 'Hint: specify a remote ssh address using the -R flag.'
           elsif %w(connect).include? @command
             @options[:ssh][:remote_addr] = Sesh::Inferences.infer_local_ssh_addr
           end
         end
       end
-      log_info @options[:ssh][:local_addr]
+      Logger.info @options[:ssh][:local_addr]
       exit
 
       def project_name_matcher
