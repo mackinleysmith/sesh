@@ -34,5 +34,13 @@ module Sesh
       when 'Terminal' then Sesh.format_command connection_command(addr)
       end
     end
+
+    def enslave_peer!
+      output = Sesh.format_and_run_command <<-BASH
+      ssh #{@options[:remote_addr]} "sesh connect #{@project} #{@options[:local_addr]}" 
+      BASH
+      puts output
+      $?
+    end
   end
 end

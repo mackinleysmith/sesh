@@ -8,8 +8,6 @@ module Sesh
     end
 
     def already_running?
-      puts "ps aux | grep \"#{project_name_matcher}\""
-      puts `ps aux | grep "#{project_name_matcher}"`
       `ps aux | grep "#{project_name_matcher}"`.strip.length > 0 end
 
     def project_name_matcher
@@ -17,15 +15,12 @@ module Sesh
       "[t]mux.*[#{pn[0]}]#{pn[1..-1]}" end
 
     def issue_start_command!
-      # eval \$SHELL -l
       cmd = Sesh.format_command <<-BASH
-      tmux -S "#{@options[:socket_file]}" new-session -d "env TMUX='' mux start #{@project}" 2>&1
+      tmux -S "#{@options[:socket_file]}" new-session -d "eval \$SHELL -l; env TMUX='' mux start #{@project}" 2>&1
       BASH
-      puts cmd
-      puts "Output: #{`#{cmd}`}"
-      true
-      # return true if output.strip.length == 0
-      # Logger.warn "Tmux failed to start with the following error: #{output}"; false
+      output = `#{cmd}`.strip
+      return true if output.length == 0
+      Logger.warn "Tmux failed to start with the following error: #{output}"; false
     end
 
     def issue_stop_command!; `pkill -f "#{project_name_matcher}"` end

@@ -95,16 +95,12 @@ module Sesh
               Logger.fatal "Sesh project '#{@options[:project]}' is not running!"
             end
           end
-          system @ssh_control.enter_slave_mode_command(addr)
+          system @ssh_control.enter_slave_mode_command(@options[:ssh][:local_addr])
         when 'enslave'
           Logger.fatal("Sesh project '#{@options[:project]}' is not running!") unless @tmux_control.already_running?
-          Logger.fatal("You must specify a machine to enslave! Eg: user@ip") if @remote_address.nil?
-          Logger.debug "Attempting to connect #{@remote_address} to Sesh project '#{@options[:project]}'..."
-          output = format_and_run_command <<-BASH
-            ssh #{@remote_address} "sesh connect #{@options[:project]} #{@local_ssh_addr}" 
-          BASH
-          puts output
-          if $?
+          Logger.fatal("You must specify a machine to enslave! Eg: user@ip") if @options[:ssh][:remote_addr].nil?
+          Logger.debug "Attempting to connect #{@options[:ssh][:remote_addr]} to Sesh project '#{@options[:project]}'..."
+          if @ssh_control.enslave_peer!
             Logger.debug "Sesh client connected successfully."
             puts
           else
@@ -227,10 +223,13 @@ module Sesh
       @options[:tmux][:pids_file]   ||= "/tmp/#{@options[:project]}.pids.txt"
       @options[:ssh][:local_addr]   ||= Sesh::Inferences.infer_local_ssh_addr
       if @options[:ssh][:remote_addr].nil?
-        ARGV.each {|a|
-          if a =~ /\.local$/ || a =~ /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/ || a =~ /^(.+)@(.+)$/
-            @options[:ssh][:remote_addr] = a
-            break end } if ARGV.any?
+        if ARGV.any?
+          ARGV.each {|a|
+            if a =~ /\.local$/ || a =~ /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/ || a =~ /^(.+)@(.+)$/
+              @options[:ssh][:remote_addr] = a
+              break end }
+          @options[:ssh][:remote_addr] ||= ARGV.shift
+        end
         if @options[:ssh][:remote_addr].nil?
           if %w(enslave run rspec).include? @command
             Logger.warn 'A remote address is required.'
