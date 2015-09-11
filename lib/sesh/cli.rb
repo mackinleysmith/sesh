@@ -77,14 +77,14 @@ module Sesh
           end
         when 'list'
           output = Sesh.format_and_run_command <<-BASH
-            ps aux | grep tmux | grep "env TMUX='' mux start" \
-                   | grep -v "[g]rep" | sed -e "s/.*mux start \\(.*\\)/\\1/"
+            ps aux | grep tmux | grep "sesh begin" | grep -v "[g]rep" \
+                   | sed -e "s/.*\\/tmp\\/\\(.*\\)\\.sock.*/\\1/"
           BASH
           running_projects = output.split("\n")
           pcount = running_projects.count
           if pcount > 0
             Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
-            running_projects.each {|rp| Logger.info rp, 1 }
+            puts; running_projects.each {|rp| Logger.info rp, 1 }
             puts
           else
             Logger.fatal "There are no Sesh projects currently running."
