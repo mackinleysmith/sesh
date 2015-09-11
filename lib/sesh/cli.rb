@@ -12,119 +12,10 @@ module Sesh
       puts; puts "  Sesh v#{VERSION}".green; puts '  ==========='.green; puts
       if ARGV.empty? or ARGV.include? '-h' or ARGV.include? '--help'
         puts HELP_BANNER.blue; exit end
-
       parse_options!
       @tmux_control = TmuxControl.new @options[:project], @options[:tmux]
       @ssh_control  = SshControl.new @tmux_control, @options[:ssh]
-
-      if @command
-        case @command
-        when 'start'
-          if @tmux_control.already_running?
-            Logger.fatal "Sesh project '#{@options[:project]}' is already running!"
-          else
-            Logger.info "Starting Sesh project '#{@options[:project]}'..."
-          end
-          @tmux_control.kill_running_processes
-          if @tmux_control.issue_start_command! &&
-             Logger.show_progress_until(-> { @tmux_control.already_running? })
-            sleep 1
-            if @tmux_control.already_running?
-              @tmux_control.store_pids_from_session!
-              Logger.success 'Sesh started successfully.'
-              puts
-            else Logger.fatal 'Sesh failed to start!' end
-          else Logger.fatal 'Sesh failed to start after ten seconds!' end
-        when 'stop'
-          if @tmux_control.already_running?
-            Logger.info "Stopping Sesh project '#{@options[:project]}'..."
-          else
-            Logger.fatal "Sesh project '#{@options[:project]}' is not running!"
-          end
-          @tmux_control.kill_running_processes
-          @tmux_control.issue_stop_command!
-          if $? && Logger.show_progress_until(-> { !@tmux_control.already_running? })
-            Logger.success 'Sesh stopped successfully.'
-            puts
-          else
-            Logger.fatal 'Sesh failed to stop after ten seconds!'
-          end
-        when 'restart'
-          Logger.fatal("Sesh project '#{@options[:project]}' is not running!") unless already_running?
-          puts `sesh stop #{@options[:project]} #{@options if @options.any?}`.strip
-          sleep 0.5
-          puts `sesh start #{@options[:project]} #{@options if @options.any?}`.strip
-        when 'new'
-          config = Tmuxinator::Config.project(@options[:project])
-          unless Tmuxinator::Config.exists?(@options[:project])
-            template = File.join(File.dirname(File.expand_path(__FILE__)),
-                                 "../lib/sesh/assets/sample.yml")
-            erb  = Erubis::Eruby.new(File.read(template)).result(binding)
-            File.open(config, "w") { |f| f.write(erb) }
-          end
-
-          Kernel.system("#{Inferences.infer_default_editor} #{config}") ||
-                           Tmuxinator::Cli.new.doctor
-          puts
-        when 'edit'
-          config = Tmuxinator::Config.project(@options[:project])
-          if Tmuxinator::Config.exists? @options[:project]
-            Kernel.system("#{Inferences.infer_default_editor} #{config}") ||
-                           Tmuxinator::Cli.new.doctor
-            puts
-          else
-            Logger.fatal "Sesh project '#{@options[:project]}' does not exist yet!"
-          end
-        when 'list'
-          output = Sesh.format_and_run_command <<-BASH
-            ps aux | grep tmux | grep "sesh begin" | grep -v "[g]rep" \
-                   | sed -e "s/.*\\/tmp\\/\\(.*\\)\\.sock.*/\\1/"
-          BASH
-          running_projects = output.split("\n")
-          pcount = running_projects.count
-          if pcount > 0
-            Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
-            puts; running_projects.each {|rp| Logger.info rp, 1 }
-            puts
-          else
-            Logger.fatal "There are no Sesh projects currently running."
-          end
-        when 'connect'
-          if @options[:ssh][:local_addr] == @options[:ssh][:remote_addr]
-            unless @tmux_control.already_running?
-              Logger.fatal "Sesh project '#{@options[:project]}' is not running!"
-            end
-          end
-          system @ssh_control.enter_slave_mode_command
-        when 'enslave'
-          Logger.fatal("Sesh project '#{@options[:project]}' is not running!") unless @tmux_control.already_running?
-          Logger.fatal("You must specify a machine to enslave! Eg: user@ip") if @options[:ssh][:remote_addr].nil?
-          Logger.info "Attempting to connect #{@options[:ssh][:remote_addr]} to Sesh project '#{@options[:project]}'..."
-          if @ssh_control.enslave_peer!
-            Logger.success "Sesh client connected successfully."
-          else
-            Logger.fatal 'Sesh client failed to start.'
-          end
-        when 'begin' then @tmux_control.begin_tmuxinator_session!
-        when 'run'
-          unless ARGV.any?
-            Logger.fatal 'A second command is required!'
-          end
-          @shell_command = ARGV.join(' ')
-          puts "Subcommand: #{@shell_command}"
-        when 'rspec'
-          unless ARGV.any?
-            Logger.fatal 'A path to a spec is required!'
-          end
-          @shell_command = ARGV.join(' ')
-          puts "Spec: #{@shell_command}"
-        else
-          Logger.fatal "Command not recognized!"
-        end
-        exit 0
-      end
-
-      Logger.fatal 'You must specify a command.'
+      handle_command!
     end
 
     def self.parse_options!
@@ -164,8 +55,15 @@ module Sesh
         opts.on('-S', '--tmux-socket-file=path', 'Path to Tmux Socket File') {|v|
           # fatal("Socket file #{v} does not exist.") unless File.exist?(v)
           parsed_options[:tmux][:socket_file] = v }
-        opts.on('-P', '--tmux-pids-file=path', 'Path to Tmux Pids File') {|v|
+        opts.on('--tmux-pids-file=path', 'Path to Tmux Pids File') {|v|
           parsed_options[:tmux][:pids_file] = v }
+
+        opts.on('-C', '--shell-command=cmd', 'Shell Command to Execute') {|v|
+          parsed_options[:shell][:command] = v }
+        opts.on('-P', '--shell-pane=pane', 'Pane to Execute Shell Command in') {|v|
+          parsed_options[:shell][:pane] = v }
+        opts.on('--spec-path=path', 'Path to Spec File to Run') {|v|
+          parsed_options[:shell][:spec] = v }
 
         # # target_opts = DEPLOYMENT_TARGETS.join '|'
         # opts.on("-T", "--target=target", 'Titanium Deployment Target') do |v|
@@ -221,9 +119,9 @@ module Sesh
       end
       @options[:tmux][:socket_file] ||= "/tmp/#{@options[:project]}.sock"
       @options[:tmux][:pids_file]   ||= "/tmp/#{@options[:project]}.pids.txt"
-      @options[:ssh][:local_addr]   ||= Sesh::Inferences.infer_local_ssh_addr
-      if @options[:ssh][:remote_addr].nil?
-        if ARGV.any?
+      if %w(enslave connect).include? @command
+        @options[:ssh][:local_addr] ||= Sesh::Inferences.infer_local_ssh_addr
+        if @options[:ssh][:remote_addr].nil? && ARGV.any?
           ARGV.each {|a|
             if a =~ /\.local$/ || a =~ /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/ || a =~ /^(.+)@(.+)$/
               @options[:ssh][:remote_addr] = a
@@ -231,7 +129,7 @@ module Sesh
           @options[:ssh][:remote_addr] ||= ARGV.shift
         end
         if @options[:ssh][:remote_addr].nil?
-          if %w(enslave run rspec).include? @command
+          if %w(enslave).include? @command
             Logger.warn 'A remote address is required.'
             Logger.fatal 'Hint: specify a remote ssh address using the -R flag.'
           elsif %w(connect).include? @command
@@ -239,6 +137,85 @@ module Sesh
           end
         end
       end
+      # TODO: parse a spec file
+      # This block should always go at the end because it eats the rest of ARGV.
+      if %w(run).include?(@command) && @options[:shell][:command].nil?
+        if ARGV.any?
+          argv_cmd_parts = []
+          argv_cmd_parts << ARGV.shift while ARGV.any?
+          @options[:shell][:command] = argv_cmd_parts.join(' ')
+        end
+        if @options[:shell][:command].nil? || @options[:shell][:command].length == 0
+          Logger.fatal 'You must specify a command to run.'
+        end
+      end
+    end
+
+    def self.handle_command!
+      if @command
+        case @command
+        when 'start'   then @tmux_control.start_project!
+        when 'stop'    then @tmux_control.stop_project!
+        when 'restart' then @tmux_control.restart_project!
+        when 'new'
+          config = Tmuxinator::Config.project(@options[:project])
+          unless Tmuxinator::Config.exists?(@options[:project])
+            template = File.join(File.dirname(File.expand_path(__FILE__)),
+                                 "../lib/sesh/assets/sample.yml")
+            erb  = Erubis::Eruby.new(File.read(template)).result(binding)
+            File.open(config, "w") { |f| f.write(erb) }
+          end
+
+          Kernel.system("#{Inferences.infer_default_editor} #{config}") ||
+                           Tmuxinator::Cli.new.doctor
+          puts
+        when 'edit'
+          config = Tmuxinator::Config.project(@options[:project])
+          if Tmuxinator::Config.exists? @options[:project]
+            Kernel.system("#{Inferences.infer_default_editor} #{config}") ||
+                           Tmuxinator::Cli.new.doctor
+            puts
+          else
+            Logger.fatal "Sesh project '#{@options[:project]}' does not exist yet!"
+          end
+        when 'list'
+          output = Sesh.format_and_run_command <<-BASH
+            ps aux | grep tmux | grep "sesh begin" | grep -v "[g]rep" \
+                   | sed -e "s/.*\\/tmp\\/\\(.*\\)\\.sock.*/\\1/"
+          BASH
+          running_projects = output.split("\n")
+          pcount = running_projects.count
+          if pcount > 0
+            Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
+            puts; running_projects.each {|rp| Logger.info rp, 1 }
+            puts
+          else Logger.fatal "There are no Sesh projects currently running." end
+        when 'connect'
+          if @options[:ssh][:local_addr] == @options[:ssh][:remote_addr]
+            unless @tmux_control.already_running?
+              Logger.fatal "Sesh project '#{@options[:project]}' is not running!"
+            end
+          end
+          system @ssh_control.enter_slave_mode_command
+        when 'enslave'
+          Logger.fatal("Sesh project '#{@options[:project]}' is not running!") unless @tmux_control.already_running?
+          Logger.fatal("You must specify a machine to enslave! Eg: user@ip") if @options[:ssh][:remote_addr].nil?
+          Logger.info "Attempting to connect #{@options[:ssh][:remote_addr]} to Sesh project '#{@options[:project]}'..."
+          if @ssh_control.enslave_peer!
+            Logger.success "Sesh client connected successfully."
+          else Logger.fatal 'Sesh client failed to start.' end
+        when 'begin' then @tmux_control.begin_tmuxinator_session!
+        when 'run'
+          @tmux_control.do_shell_operation! @options[:shell]
+        when 'rspec'
+          puts "Spec: #{@options[:shell][:spec]}"
+        else
+          Logger.fatal "Command not recognized!"
+        end
+        exit 0
+      end
+
+      Logger.fatal 'You must specify a command.'
     end
   end
 end

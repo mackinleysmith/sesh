@@ -30,6 +30,11 @@ module Sesh
 
   DEFAULT_OPTIONS = {
     project: nil,
+    shell: {
+      command: nil,
+      pane: nil,
+      spec: nil
+    },
     ssh: {
       local_addr: nil,
       remote_addr: nil

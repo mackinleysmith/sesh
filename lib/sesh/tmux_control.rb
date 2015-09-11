@@ -19,7 +19,6 @@ module Sesh
       cmd = Sesh.format_command <<-BASH
       tmux -S "#{@options[:socket_file]}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; sesh begin'\\"" 2>&1
       BASH
-      # puts cmd
       output = `#{cmd}`.strip
       return true if $? && output.length == 0
       Logger.warn "Tmux failed to start with the following error: #{output}"; false
@@ -30,7 +29,6 @@ module Sesh
     def connection_command; "tmux -S #{@options[:socket_file]} a" end
 
     def obtain_pids_from_session
-      # TODO: grep this to just those pids from the current project
       `tmux -S "#{@options[:socket_file]}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" | grep -v tmux | awk '{print $1}'`.strip.lines
     end
     def store_pids_from_session!
@@ -48,6 +46,66 @@ module Sesh
 
     def begin_tmuxinator_session!
       %x[env TMUX='' mux start #{@project}] end
+
+    def start_project!
+      if already_running?
+        Logger.fatal "Sesh project '#{@project}' is already running!" end
+      Logger.info "Starting Sesh project '#{@project}'..."
+      kill_running_processes
+      if issue_start_command! && Logger.show_progress_until(-> { already_running? })
+        sleep 1
+        if already_running?
+          store_pids_from_session!
+          Logger.success 'Sesh started successfully.'
+          puts
+        else Logger.fatal 'Sesh failed to start!' end
+      else Logger.fatal 'Sesh failed to start after ten seconds!' end
+    end
+    def stop_project!
+      unless already_running?
+        Logger.fatal "Sesh project '#{@project}' is not running!" end
+      Logger.info "Stopping Sesh project '#{@project}'..."
+      kill_running_processes
+      issue_stop_command!
+      if $? && Logger.show_progress_until(-> { !already_running? })
+        Logger.success 'Sesh stopped successfully.'
+        puts
+      else Logger.fatal 'Sesh failed to stop after ten seconds!' end
+    end
+    def restart_project!; stop_project!; sleep 0.5; start_project! end
+
+    def send_keys_to_project!(keys)
+      `tmux -S "#{@options[:socket_file]}" send-keys #{keys}`.strip.length == 0
+    end
+    def send_interrupt!; send_keys_to_project! 'C-c' end
+    def interrupt_and_send_keys_to_project!(keys)
+      send_interrupt!; send_keys_to_project! keys end
+    def send_keys_to_pane!(pane, keys)
+      move_cursor_to_pane! pane
+      send_keys_to_project! keys end
+    def interrupt_and_send_keys_to_pane!(pane, keys)
+      move_cursor_to_pane_and_interrupt! pane
+      send_keys_to_project! keys end
+    def send_command_to_project!(command)
+      send_keys_to_project! "\"#{command}\" Enter" end 
+    def interrupt_and_send_command_to_project!(command)
+      send_interrupt!; send_command_to_project!(command) end
+    def send_command_to_pane!(pane, command)
+      send_keys_to_pane! pane, "\"#{command}\" Enter" end
+    def interrupt_and_send_command_to_pane!(pane, command)
+      interrupt_and_send_keys_to_pane!(pane, "\"#{command}\" Enter") end
+    def move_cursor_to_pane!(pane); send_keys_to_project! "C-a q #{pane}" end
+    def move_cursor_to_pane_and_interrupt!(pane)
+      move_cursor_to_pane!(pane); send_interrupt! end
+    def do_shell_operation!(options=DEFAULT_OPTIONS[:shell])
+      unless options[:spec].nil?
+        options[:command] ||= "spring rspec #{options[:spec]}" end
+      if options[:pane].nil?
+        interrupt_and_send_command_to_project! options[:command]
+      else
+        interrupt_and_send_command_to_pane! options[:pane], options[:command]
+      end
+    end
 
     # Getter methods for passthru to SshControl class
     def project; @project end
