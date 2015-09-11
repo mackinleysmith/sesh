@@ -15,8 +15,9 @@ module Sesh
       "[t]mux.*[#{pn[0]}]#{pn[1..-1]}" end
 
     def issue_start_command!
+      # Add bundle exec to the sesh begin command for dev purposes.
       cmd = Sesh.format_command <<-BASH
-      tmux -S "#{@options[:socket_file]}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; bundle exec sesh begin'\\"" 2>&1
+      tmux -S "#{@options[:socket_file]}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; sesh begin'\\"" 2>&1
       BASH
       # puts cmd
       output = `#{cmd}`.strip

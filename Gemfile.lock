@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sesh (0.1.1)
+    sesh (0.1.2)
       awesome_print
       colorize
       deep_merge
