@@ -9,10 +9,10 @@ module Sesh
     end
 
     def connection_command(addr=nil)
-      addr ||= @options[:local_addr]
+      addr ||= @options[:remote_addr]
       tmux_cmd = @tmux_control.connection_command
       return tmux_cmd if addr == @options[:local_addr]
-      "ssh #{addr} -t '#{tmux_cmd}'"
+      puts "ssh #{addr} -t '#{tmux_cmd}'"
     end
 
     def enter_slave_mode_command(addr=nil)
@@ -37,7 +37,7 @@ module Sesh
 
     def enslave_peer!
       puts Sesh.format_and_run_command <<-BASH
-      ssh #{@options[:remote_addr]} -t "sesh connect #{@project} #{@options[:local_addr]}" 
+      ssh #{@options[:remote_addr]} -t "sesh connect -p #{@project} -R #{@options[:local_addr]}" 
       BASH
       $?
     end
