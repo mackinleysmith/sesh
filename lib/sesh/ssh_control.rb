@@ -12,7 +12,7 @@ module Sesh
       addr ||= @options[:remote_addr]
       tmux_cmd = @tmux_control.connection_command
       return tmux_cmd if addr == @options[:local_addr]
-      puts "ssh #{addr} -t '#{tmux_cmd}'"
+      "ssh #{addr} -t '#{tmux_cmd}'"
     end
 
     def enter_slave_mode_command(addr=nil)

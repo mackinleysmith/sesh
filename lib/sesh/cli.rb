@@ -95,7 +95,7 @@ module Sesh
               Logger.fatal "Sesh project '#{@options[:project]}' is not running!"
             end
           end
-          system @ssh_control.enter_slave_mode_command(@options[:ssh][:local_addr])
+          system @ssh_control.enter_slave_mode_command
         when 'enslave'
           Logger.fatal("Sesh project '#{@options[:project]}' is not running!") unless @tmux_control.already_running?
           Logger.fatal("You must specify a machine to enslave! Eg: user@ip") if @options[:ssh][:remote_addr].nil?
