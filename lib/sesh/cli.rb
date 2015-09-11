@@ -9,7 +9,7 @@ require 'deep_merge'
 module Sesh
   class Cli
     def self.start
-      puts "Sesh v#{Sesh::VERSION}".green
+      puts; puts "  Sesh v#{VERSION}".green; puts '  ==========='.green; puts
       if ARGV.empty? or ARGV.include? '-h' or ARGV.include? '--help'
         puts HELP_BANNER.blue; exit end
 
@@ -23,7 +23,7 @@ module Sesh
           if @tmux_control.already_running?
             Logger.fatal "Sesh project '#{@options[:project]}' is already running!"
           else
-            Logger.debug "Starting Sesh project '#{@options[:project]}'..."
+            Logger.info "Starting Sesh project '#{@options[:project]}'..."
           end
           @tmux_control.kill_running_processes
           if @tmux_control.issue_start_command! &&
@@ -31,20 +31,20 @@ module Sesh
             sleep 1
             if @tmux_control.already_running?
               @tmux_control.store_pids_from_session!
-              Logger.debug 'Sesh started successfully.'
+              Logger.success 'Sesh started successfully.'
               puts
             else Logger.fatal 'Sesh failed to start!' end
           else Logger.fatal 'Sesh failed to start after ten seconds!' end
         when 'stop'
           if @tmux_control.already_running?
-            Logger.debug "Stopping Sesh project '#{@options[:project]}'..."
+            Logger.info "Stopping Sesh project '#{@options[:project]}'..."
           else
             Logger.fatal "Sesh project '#{@options[:project]}' is not running!"
           end
           @tmux_control.kill_running_processes
           @tmux_control.issue_stop_command!
           if $? && Logger.show_progress_until(-> { !@tmux_control.already_running? })
-            Logger.debug 'Sesh stopped successfully.'
+            Logger.success 'Sesh stopped successfully.'
             puts
           else
             Logger.fatal 'Sesh failed to stop after ten seconds!'
@@ -83,8 +83,8 @@ module Sesh
           running_projects = output.split("\n")
           pcount = running_projects.count
           if pcount > 0
-            Logger.info "#{pcount} project#{pcount>1 ? 's':''} currently running:"
-            puts running_projects
+            Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
+            running_projects.each {|rp| Logger.info rp, 1 }
             puts
           else
             Logger.fatal "There are no Sesh projects currently running."
@@ -99,13 +99,13 @@ module Sesh
         when 'enslave'
           Logger.fatal("Sesh project '#{@options[:project]}' is not running!") unless @tmux_control.already_running?
           Logger.fatal("You must specify a machine to enslave! Eg: user@ip") if @options[:ssh][:remote_addr].nil?
-          Logger.debug "Attempting to connect #{@options[:ssh][:remote_addr]} to Sesh project '#{@options[:project]}'..."
+          Logger.info "Attempting to connect #{@options[:ssh][:remote_addr]} to Sesh project '#{@options[:project]}'..."
           if @ssh_control.enslave_peer!
-            Logger.debug "Sesh client connected successfully."
-            puts
+            Logger.success "Sesh client connected successfully."
           else
             Logger.fatal 'Sesh client failed to start.'
           end
+        when 'begin' then @tmux_control.begin_tmuxinator_session!
         when 'run'
           unless ARGV.any?
             Logger.fatal 'A second command is required!'

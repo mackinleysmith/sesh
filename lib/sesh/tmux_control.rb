@@ -16,10 +16,11 @@ module Sesh
 
     def issue_start_command!
       cmd = Sesh.format_command <<-BASH
-      tmux -S "#{@options[:socket_file]}" new-session -d "eval \$SHELL -l; env TMUX='' mux start #{@project}" 2>&1
+      tmux -S "#{@options[:socket_file]}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; bundle exec sesh begin'\\"" 2>&1
       BASH
+      # puts cmd
       output = `#{cmd}`.strip
-      return true if output.length == 0
+      return true if $? && output.length == 0
       Logger.warn "Tmux failed to start with the following error: #{output}"; false
     end
 
@@ -29,7 +30,8 @@ module Sesh
 
     def obtain_pids_from_session
       # TODO: grep this to just those pids from the current project
-      `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" | grep -v tmux | awk '{print $1}'`.strip.lines end
+      `tmux -S "#{@options[:socket_file]}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" | grep -v tmux | awk '{print $1}'`.strip.lines
+    end
     def store_pids_from_session!
       File.open(@options[:pids_file], 'w') {|f|
         obtain_pids_from_session.each{|pid| f.puts pid } }
@@ -42,6 +44,9 @@ module Sesh
       end
     end
     def kill_process!(pid); `kill -9 #{pid}` end
+
+    def begin_tmuxinator_session!
+      %x[env TMUX='' mux start #{@project}] end
 
     # Getter methods for passthru to SshControl class
     def project; @project end

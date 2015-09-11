@@ -36,10 +36,9 @@ module Sesh
     end
 
     def enslave_peer!
-      output = Sesh.format_and_run_command <<-BASH
-      ssh #{@options[:remote_addr]} "sesh connect #{@project} #{@options[:local_addr]}" 
+      puts Sesh.format_and_run_command <<-BASH
+      ssh #{@options[:remote_addr]} -t "sesh connect #{@project} #{@options[:local_addr]}" 
       BASH
-      puts output
       $?
     end
   end
