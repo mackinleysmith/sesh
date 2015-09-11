@@ -7,12 +7,21 @@ module Sesh
       @options = DEFAULT_OPTIONS[:tmux].merge(options)
     end
 
-    def already_running?
-      `ps aux | grep "#{project_name_matcher}"`.strip.length > 0 end
+    def self.get_running_projects
+      output = Sesh.format_and_run_command <<-BASH
+        ps aux | grep tmux | grep "sesh begin" | grep -v "[g]rep" \
+               | sed -e "s/.*\\/tmp\\/\\(.*\\)\\.sock.*/\\1/"
+      BASH
+      output.split("\n")
+    end
+    def already_running?; self.class.get_running_projects.include? @project end
+      # `ps aux | grep "#{project_name_matcher}"`.strip.length > 0 end
 
     def project_name_matcher
-      pn = @project.gsub '-', '\-'
-      "[t]mux.*[#{pn[0]}]#{pn[1..-1]}" end
+      "[t]mux.*[t]mp\\/#{Regexp.escape(@options[:socket_file].split('/')[2..-1].join('/'))}.*"
+    end
+      # pn = @project.gsub '-', '\-'
+      # "[t]mux.*[#{pn[0]}]#{pn[1..-1]}" end
 
     def issue_start_command!
       # Add bundle exec to the sesh begin command for dev purposes.
@@ -66,8 +75,7 @@ module Sesh
         Logger.fatal "Sesh project '#{@project}' is not running!" end
       Logger.info "Stopping Sesh project '#{@project}'..."
       kill_running_processes
-      issue_stop_command!
-      if $? && Logger.show_progress_until(-> { !already_running? })
+      if issue_stop_command! && Logger.show_progress_until(-> { !already_running? })
         Logger.success 'Sesh stopped successfully.'
         puts
       else Logger.fatal 'Sesh failed to stop after ten seconds!' end

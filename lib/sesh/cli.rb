@@ -179,11 +179,7 @@ module Sesh
             Logger.fatal "Sesh project '#{@options[:project]}' does not exist yet!"
           end
         when 'list'
-          output = Sesh.format_and_run_command <<-BASH
-            ps aux | grep tmux | grep "sesh begin" | grep -v "[g]rep" \
-                   | sed -e "s/.*\\/tmp\\/\\(.*\\)\\.sock.*/\\1/"
-          BASH
-          running_projects = output.split("\n")
+          running_projects = TmuxControl.get_running_projects
           pcount = running_projects.count
           if pcount > 0
             Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
