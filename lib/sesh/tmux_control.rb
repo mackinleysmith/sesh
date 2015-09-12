@@ -2,7 +2,7 @@ require 'sesh'
 
 module Sesh
   class TmuxControl
-    def initialize(project_name, options={})
+    def initialize(project, options={})
       @project = project || Inferences::infer_project_from_current_directory
       @options = DEFAULT_OPTIONS[:tmux].merge(options)
     end
