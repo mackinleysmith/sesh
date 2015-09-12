@@ -34,12 +34,21 @@ module Sesh
     end
 
     def issue_stop_command!;
-      `pkill -f "[t]mux .*#{Regexp.escape(@project)}"` end
+      `ps -ef | grep "[t]mux -u attach-session -t #{Regexp.escape(@project)}\\$" | grep -v grep | awk '{print $2}' | xargs kill -9`
+    end
 
     def connection_command; "tmux -S #{@options[:socket_file]} a" end
 
     def obtain_pids_from_session
-      `tmux -S "#{@options[:socket_file]}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" | grep -v tmux | awk '{print $1}'`.strip.lines
+      tmux_processes =
+        `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" -t "#{@project}" 2> /dev/null | grep -v tmux | awk '{print $1}'`.strip.lines +
+        `tmux -S "#{@options[:socket_file]}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" 2> /dev/null | grep -v tmux | awk '{print $1}'`.strip.lines
+      return [] unless tmux_processes.any?
+      spring_processes = []
+      spring_app_pid = `ps -ef | grep "[s]pring app .*| #{@project} |" | grep -v grep | awk '{print $2}'`.strip
+      spring_processes += `ps -ef | grep #{spring_app_pid} | grep -v grep | grep -v "[s]pring app" | awk '{print $2}'`.strip.lines if spring_app_pid.length > 0
+      spring_processes += `ps -ef | grep "[s]pring.*| #{@project} |" | grep -v grep | awk '{print $2}'`.strip.lines
+      spring_processes + tmux_processes
     end
     def store_pids_from_session!
       File.open(@options[:pids_file], 'w') {|f|
@@ -47,12 +56,15 @@ module Sesh
     end
 
     def kill_running_processes
-      if File.exists? @options[:pids_file]
-        File.readlines(@options[:pids_file]).each{|pid| kill_process! pid }
-        File.delete @options[:pids_file]
-      end
+      obtain_pids_from_session.each{|pid| kill_process! pid }
+      # if File.exists? @options[:pids_file]
+      #   File.readlines(@options[:pids_file]).each{|pid|
+      #     puts "Killing #{pid}"
+      #     kill_process! pid }
+      #   File.delete @options[:pids_file]
+      # end
     end
-    def kill_process!(pid); `kill -9 #{pid}` end
+    def kill_process!(pid); `kill -9 #{pid} 2>&1` end
 
     def begin_tmuxinator_session!
       %x[env TMUX='' mux start #{@project}] end
