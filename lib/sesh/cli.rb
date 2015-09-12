@@ -14,6 +14,7 @@ module Sesh
         puts HELP_BANNER.blue; exit end
       parse_options!
       @tmux_control = TmuxControl.new @options[:project], @options[:tmux]
+      
       @ssh_control  = SshControl.new @tmux_control, @options[:ssh]
       handle_command!
     end

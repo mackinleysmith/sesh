@@ -18,7 +18,7 @@ module Sesh
       # `ps aux | grep "#{project_name_matcher}"`.strip.length > 0 end
 
     def project_name_matcher
-      "[t]mux.*[t]mp\\/#{Regexp.escape(@options[:socket_file].split('/')[2..-1].join('/'))}.*"
+      "[t]mux.*#{Regexp.escape(@project)}.*"
     end
       # pn = @project.gsub '-', '\-'
       # "[t]mux.*[#{pn[0]}]#{pn[1..-1]}" end
@@ -26,14 +26,15 @@ module Sesh
     def issue_start_command!
       # Add bundle exec to the sesh begin command for dev purposes.
       cmd = Sesh.format_command <<-BASH
-      tmux -S "#{@options[:socket_file]}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; sesh begin'\\"" 2>&1
+      tmux -S "#{@options[:socket_file]}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; sesh begin #{@project}'\\"" 2>&1
       BASH
       output = `#{cmd}`.strip
       return true if $? && output.length == 0
       Logger.warn "Tmux failed to start with the following error: #{output}"; false
     end
 
-    def issue_stop_command!; `pkill -f "#{project_name_matcher}"` end
+    def issue_stop_command!;
+      `pkill -f "[t]mux .*#{Regexp.escape(@project)}"` end
 
     def connection_command; "tmux -S #{@options[:socket_file]} a" end
 
