@@ -4,7 +4,8 @@ module Sesh
   class TmuxControl
     def initialize(project, options={})
       @project = project || Inferences::infer_project_from_current_directory
-      @options = DEFAULT_OPTIONS[:tmux].merge(options)
+      @options = {}.merge(DEFAULT_OPTIONS[:tmux]).merge(options)
+      @socket_file = @options[:socket_file]
     end
 
     def self.get_running_projects
@@ -26,7 +27,7 @@ module Sesh
     def issue_start_command!
       # Add bundle exec to the sesh begin command for dev purposes.
       cmd = Sesh.format_command <<-BASH
-      tmux -S "#{@options[:socket_file]}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; sesh begin #{@project}'\\"" 2>&1
+      tmux -S "#{@socket_file}" new-session -d "eval \\"\$SHELL -l -c 'rvm use default; sesh begin #{@project}'\\"" 2>&1
       BASH
       output = `#{cmd}`.strip
       return true if $? && output.length == 0
@@ -37,12 +38,12 @@ module Sesh
       `ps -ef | grep "[t]mux -u attach-session -t #{Regexp.escape(@project)}\\$" | grep -v grep | awk '{print $2}' | xargs kill -9`
     end
 
-    def connection_command; "tmux -S #{@options[:socket_file]} a" end
+    def connection_command; "tmux -S #{@socket_file} a" end
 
     def obtain_pids_from_session
       tmux_processes =
         `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" -t "#{@project}" 2> /dev/null | grep -v tmux | awk '{print $1}'`.strip.lines +
-        `tmux -S "#{@options[:socket_file]}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" 2> /dev/null | grep -v tmux | awk '{print $1}'`.strip.lines
+        `tmux -S "#{@socket_file}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" 2> /dev/null | grep -v tmux | awk '{print $1}'`.strip.lines
       return [] unless tmux_processes.any?
       spring_processes = []
       spring_app_pid = `ps -ef | grep "[s]pring app .*| #{@project} |" | grep -v grep | awk '{print $2}'`.strip
@@ -95,8 +96,55 @@ module Sesh
     end
     def restart_project!; stop_project!; sleep 0.5; start_project! end
 
+    def connected_client_devices
+      `tmux -S "#{@socket_file}" list-clients | cut -d : -f 1 | cut -d / -f 3`.strip.lines.map(&:strip)
+    end
+    def get_ip_from_device(devname)
+      ip_line = `who -a 2> /dev/null | grep " #{devname} "`.strip
+      return '127.0.0.1' unless ip_line.length > 0 && ip_line =~ /\)$/
+      ip_line.split('(')[-1][0..-2]
+    end
+    def get_device_from_ip(ip)
+      return if ( connected_devs = connected_client_devices ).length == 0
+      who_lines = 
+        `who -a 2> /dev/null | grep #{ip == '127.0.0.1' ? ' -v "\\([.*]\\)\\$' :
+                                '"' + Regexp.escape("(#{ip})") }"`.strip.lines
+      return if who_lines.length == 0
+      connected_devs.find{|d| who_lines.find{|l| l =~ / #{d} / } }
+    end
+    def connected_clients
+      connected_client_devices.map{|devname| get_ip_from_device(devname) } end
+    def disconnect_client_by_device!(devname)
+      `tmux -S "#{@socket_file}" detach-client -t "/dev/#{devname}"`.strip.length == 0 end
+    def disconnect_client_by_ip!(ip)
+      device = get_device_from_ip(ip)
+      Logger.fatal("#{ip} is not connected to project \"#{@project}\".") if device.nil?
+      disconnect_client_by_device! device end
+    def disconnect_client_by_index!(index)
+      disconnect_client_by_device! connected_client_devices[index] end
+    def disconnect_client!(identifier)
+      if identifier.to_i.to_s == identifier.to_s # It's an integer
+        disconnect_client_by_index! identifier.to_i - 1
+      elsif identifier =~ /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/ # It's an ip
+        disconnect_client_by_ip! identifier
+      elsif identifier =~ /.*@.*/ || identifier =~ /\.local$/
+        ping_output = `ping -a -c 1 #{identifier} 2>&1`.strip.lines
+        if $? && ping_output.length > 1 && ping_output[1] =~ / from /
+          resolved_ip = ping_output[1].split(' from ')[1].split(': ')[0]
+          disconnect_client_by_ip! resolved_ip
+        else
+          puts ping_output
+        end
+      else
+        ssh_identifier =
+          `awk '/Host #{identifier}/ {getline; print $2}' ~/.ssh/config`.strip
+        return disconnect_client!(ssh_identifier) if ssh_identifier.length > 0
+        fatal("Client")
+      end
+    end
+
     def send_keys_to_project!(keys)
-      `tmux -S "#{@options[:socket_file]}" send-keys #{keys}`.strip.length == 0
+      `tmux -S "#{@socket_file}" send-keys #{keys}`.strip.length == 0
     end
     def send_interrupt!; send_keys_to_project! 'C-c' end
     def interrupt_and_send_keys_to_project!(keys)

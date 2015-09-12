@@ -183,7 +183,19 @@ module Sesh
           pcount = running_projects.count
           if pcount > 0
             Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
-            puts; running_projects.each {|rp| Logger.info rp, 1 }
+            running_projects.each do |rp|
+              puts; Logger.info "Project: #{rp}", 1
+              tc = TmuxControl.new rp, socket_file: "/tmp/#{rp}.sock"
+              tc_clients = tc.connected_client_devices
+              if tc_clients.any?
+                Logger.success "Connected Client Devices:", 2
+                tc_clients.each_with_index do |c, i|
+                  Logger.info "#{i+1}: #{c}: #{tc.get_ip_from_device(c)}", 3
+                end
+              else
+                Logger.warn 'No clients connected.', 2
+              end
+            end
             puts
           else Logger.fatal "There are no Sesh projects currently running." end
         when 'connect'
@@ -205,6 +217,7 @@ module Sesh
           @tmux_control.do_shell_operation! @options[:shell]
         when 'rspec'
           puts "Spec: #{@options[:shell][:spec]}"
+        when 'detach' then @tmux_control.disconnect_client! ARGV.join(' ')
         else
           Logger.fatal "Command not recognized!"
         end
