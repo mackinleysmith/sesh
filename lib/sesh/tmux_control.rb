@@ -123,7 +123,7 @@ module Sesh
     def disconnect_client_by_index!(index)
       disconnect_client_by_device! connected_client_devices[index] end
     def disconnect_client!(identifier)
-      identifier = Inferences.infer_local_ssh_addr if identifier.nil? || identifier.length == 0
+      identifier = '127.0.0.1' if identifier.nil? || identifier.length == 0
       if identifier.to_i.to_s == identifier.to_s # It's an integer
         disconnect_client_by_index! identifier.to_i - 1
       elsif identifier =~ /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/ # It's an ip
