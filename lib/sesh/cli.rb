@@ -48,17 +48,18 @@ module Sesh
           parsed_options[:project] = v }
 
         # Options for "new" command
-        opts.on('-T', '--template=path', 'Path to Tmuxinator Template') {|v|
-          if @command == 'new' then parsed_options[:template] = v
-          else Logger.fatal('Unrecognized option --template.') end }
+        if @command == 'new'
+          opts.on('-T', '--template=path', 'Path to Tmuxinator Template') {|v|
+            parsed_options[:template] = v }
+        end
 
-        # Options for "connect" command
-        opts.on('-N', '--new-window', 'Connect in a new terminal window') {|v|
-          Logger.fatal('Unrecognized option --new-window.') if @command != 'connect'
-          parsed_options[:ssh][:connect_in_new_window] = true }
-        opts.on('-F', '--fullscreen', 'Fullscreen new terminal window after connecting') {|v|
-          Logger.fatal('Unrecognized option --fullscreen.') if @command != 'connect'
-          parsed_options[:ssh][:connect_fullscreen] = true }
+        # Options for "connect" and "enslave" commands
+        if %w(connect enslave).include? @command
+          opts.on('-N', '--new-window', 'Connect in a new terminal window') {|v|
+            parsed_options[:ssh][:connect_in_new_window] = true }
+          opts.on('-F', '--fullscreen', 'Fullscreen new terminal window after connecting') {|v|
+            parsed_options[:ssh][:connect_fullscreen] = true }
+        end
 
         # SSH options
         opts.on("-L", "--local-ssh-addr=addr", 'Local SSH Address') {|v|

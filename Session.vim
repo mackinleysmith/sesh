@@ -336,12 +336,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 33 - ((13 * winheight(0) + 10) / 20)
+let s:l = 34 - ((14 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-33
-normal! 032|
+34
+normal! 070|
 wincmd w
 argglobal
 edit lib/sesh/inferences.rb
@@ -390,14 +390,14 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 91 - ((18 * winheight(0) + 9) / 19)
+let s:l = 61 - ((12 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-91
-normal! 017|
+61
+normal! 057|
 wincmd w
-2wincmd w
+5wincmd w
 exe '1resize ' . ((&lines * 40 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
 exe '2resize ' . ((&lines * 20 + 31) / 62)
