@@ -273,9 +273,10 @@ badd +22 lib/sesh/assets/sample.yml
 badd +0 lib/sesh/tmux_control.rb
 badd +15 lib/sesh/ssh_control.rb
 badd +0 lib/sesh.rb
+badd +0 ~/Sites/sesh/sesh.gemspec
 argglobal
 silent! argdel *
-edit lib/sesh/tmux_control.rb
+edit ~/Sites/sesh/sesh.gemspec
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -283,6 +284,10 @@ split
 wincmd _ | wincmd |
 vsplit
 1wincmd h
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd w
 wincmd w
 wincmd _ | wincmd |
 split
@@ -297,16 +302,18 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 40 + 31) / 62)
+exe '1resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
-exe '2resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 135 + 136) / 272)
-exe '3resize ' . ((&lines * 19 + 31) / 62)
+exe '2resize ' . ((&lines * 19 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 136 + 136) / 272)
+exe '3resize ' . ((&lines * 29 + 31) / 62)
 exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
-exe '4resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 4resize ' . ((&columns * 136 + 136) / 272)
+exe '4resize ' . ((&lines * 10 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 135 + 136) / 272)
 exe '5resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 5resize ' . ((&columns * 135 + 136) / 272)
+exe 'vert 5resize ' . ((&columns * 136 + 136) / 272)
+exe '6resize ' . ((&lines * 19 + 31) / 62)
+exe 'vert 6resize ' . ((&columns * 135 + 136) / 272)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -317,12 +324,30 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 143 - ((28 * winheight(0) + 20) / 40)
+let s:l = 1 - ((0 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-143
-normal! 042|
+1
+normal! 0
+wincmd w
+argglobal
+edit lib/sesh/tmux_control.rb
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 148 - ((16 * winheight(0) + 9) / 19)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+148
+normal! 035|
 wincmd w
 argglobal
 edit lib/sesh/ssh_control.rb
@@ -335,12 +360,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 15 - ((9 * winheight(0) + 10) / 20)
+let s:l = 23 - ((13 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-15
-normal! 036|
+23
+normal! 058|
 wincmd w
 argglobal
 edit lib/sesh/inferences.rb
@@ -353,7 +378,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 11 - ((4 * winheight(0) + 9) / 19)
+let s:l = 11 - ((2 * winheight(0) + 5) / 10)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -389,24 +414,25 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 222 - ((11 * winheight(0) + 9) / 19)
+let s:l = 57 - ((8 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-222
-normal! 015|
+57
+normal! 040|
 wincmd w
-2wincmd w
-exe '1resize ' . ((&lines * 40 + 31) / 62)
+exe '1resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
-exe '2resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 135 + 136) / 272)
-exe '3resize ' . ((&lines * 19 + 31) / 62)
+exe '2resize ' . ((&lines * 19 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 136 + 136) / 272)
+exe '3resize ' . ((&lines * 29 + 31) / 62)
 exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
-exe '4resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 4resize ' . ((&columns * 136 + 136) / 272)
+exe '4resize ' . ((&lines * 10 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 135 + 136) / 272)
 exe '5resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 5resize ' . ((&columns * 135 + 136) / 272)
+exe 'vert 5resize ' . ((&columns * 136 + 136) / 272)
+exe '6resize ' . ((&lines * 19 + 31) / 62)
+exe 'vert 6resize ' . ((&columns * 135 + 136) / 272)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

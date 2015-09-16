@@ -2,9 +2,9 @@ PATH
   remote: .
   specs:
     sesh (0.3.2)
-      awesome_print
-      colorize
-      deep_merge
+      awesome_print (~> 1.6.1)
+      colorize (~> 0.7.7)
+      deep_merge (~> 1.0.1)
       tmuxinator (~> 0.6.9)
 
 GEM
@@ -40,7 +40,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.10)
   rake (~> 10.0)
-  rspec
+  rspec (~> 3.3.0)
   sesh!
 
 BUNDLED WITH

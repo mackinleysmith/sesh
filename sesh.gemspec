@@ -21,12 +21,12 @@ Gem::Specification.new do |s|
   s.homepage      = 'http://rubygems.org/gems/sesh'
   s.license       = 'GNU GPLv3'
 
-  s.add_development_dependency "bundler", "~> 1.10"
-  s.add_development_dependency "rake", "~> 10.0"
-  s.add_development_dependency "rspec"
+  s.add_development_dependency 'bundler', '~> 1.10'
+  s.add_development_dependency 'rake', '~> 10.0'
+  s.add_development_dependency 'rspec', '~> 3.3.0'
 
   s.add_dependency 'tmuxinator', '~> 0.6.9'
-  s.add_dependency 'deep_merge'
-  s.add_dependency 'awesome_print'
-  s.add_dependency 'colorize'
+  s.add_dependency 'deep_merge', '~> 1.0.1'
+  s.add_dependency 'awesome_print', '~> 1.6.1'
+  s.add_dependency 'colorize', '~> 0.7.7'
 end
