@@ -19,20 +19,22 @@ module Sesh
       @term_app ||= Inferences.infer_terminal_app
       case @term_app
       when 'iTerm'
+        tell_term_app = %Q[tell application "#{@term_app}"]
+        tell_term_process =
+          %Q[tell application "System Events" to tell process "#{@term_app}"]
+        cmd = %Q[osascript -e '#{tell_term_app} to activate']
         if @options[:connect_in_new_window]
-          tell_term_app     = 'tell application "' + @term_app + '"'
-          tell_term_process = 'tell application "System Events" to tell process "' + 
-                               @term_app + '"'
-          Sesh.format_command <<-BASH
-            osascript \
-                  -e '#{tell_term_app} to activate' \
-                  -e '#{tell_term_process} to keystroke \"n\" using command down' \
-                  -e 'delay 1' \
-                  -e "#{tell_term_app.gsub('"', '\\"')} to tell session -1 of current \
-                      terminal to write text \\"#{connection_command(addr)}\\"" \
-                  -e '#{tell_term_process} to keystroke return using command down'
-          BASH
-        else Sesh.format_command connection_command(addr) end
+          cmd << %Q[ -e '#{tell_term_process} to keystroke \"n\" using command down']
+          cmd << %Q[ -e 'delay 1']
+        end
+        cmd << %Q[ -e "#{tell_term_app.gsub('"', '\\"')} to tell session -1] <<
+               %Q[ of current terminal to write text \\"#{connection_command(addr)}\\""]
+
+        if @options[:connect_fullscreen]
+          # TODO: come up with a non-toggling way to ensure fullscreen
+          cmd << %Q[ -e '#{tell_term_process} to keystroke return using command down']
+        end
+        Sesh.format_command cmd
       when 'Terminal' then Sesh.format_command connection_command(addr)
       end
     end

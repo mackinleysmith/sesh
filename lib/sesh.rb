@@ -39,7 +39,8 @@ module Sesh
     ssh: {
       local_addr: nil,
       remote_addr: nil,
-      connect_in_new_window: false
+      connect_in_new_window: false,
+      connect_fullscreen: false
     },
     tmux: {
       socket_file: nil,

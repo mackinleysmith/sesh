@@ -53,9 +53,12 @@ module Sesh
           else Logger.fatal('Unrecognized option --template.') end }
 
         # Options for "connect" command
-        opts.on('-n', '--new-window', 'Connect in a new terminal window') {|v|
+        opts.on('-N', '--new-window', 'Connect in a new terminal window') {|v|
           Logger.fatal('Unrecognized option --new-window.') if @command != 'connect'
           parsed_options[:ssh][:connect_in_new_window] = true }
+        opts.on('-F', '--fullscreen', 'Fullscreen new terminal window after connecting') {|v|
+          Logger.fatal('Unrecognized option --fullscreen.') if @command != 'connect'
+          parsed_options[:ssh][:connect_fullscreen] = true }
 
         # SSH options
         opts.on("-L", "--local-ssh-addr=addr", 'Local SSH Address') {|v|
