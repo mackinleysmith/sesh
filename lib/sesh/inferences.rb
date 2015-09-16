@@ -3,9 +3,12 @@ require 'tmuxinator'
 
 module Sesh
   module Inferences
+    def self.infer_current_directory
+      `printf '%q\n' "${PWD##*/}"`.strip
+    end
     def self.infer_project_from_current_directory
-      output = `printf '%q\n' "${PWD##*/}"`.strip
-      return output if Tmuxinator::Config.exists?(output)
+      inferred_dir = infer_current_directory
+      return inferred_dir if Tmuxinator::Config.exists? inferred_dir
     end
     def self.infer_local_ssh_addr
       inferred_user = `echo $USER`.strip

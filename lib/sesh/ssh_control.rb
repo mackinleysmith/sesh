@@ -19,27 +19,26 @@ module Sesh
       @term_app ||= Inferences.infer_terminal_app
       case @term_app
       when 'iTerm'
-        tell_term_app     = 'tell application "' + @term_app + '"'
-        tell_term_process = 'tell application "System Events" to tell process "' + 
-                             @term_app + '"'
-        Sesh.format_command <<-BASH
-          osascript \
-                -e '#{tell_term_app} to activate' \
-                -e '#{tell_term_process} to keystroke \"n\" using command down' \
-                -e 'delay 1' \
-                -e "#{tell_term_app.gsub('"', '\\"')} to tell session -1 of current \
-                    terminal to write text \\"#{connection_command(addr)}\\"" \
-                -e '#{tell_term_process} to keystroke return using command down'
-        BASH
+        if @options[:connect_in_new_window]
+          tell_term_app     = 'tell application "' + @term_app + '"'
+          tell_term_process = 'tell application "System Events" to tell process "' + 
+                               @term_app + '"'
+          Sesh.format_command <<-BASH
+            osascript \
+                  -e '#{tell_term_app} to activate' \
+                  -e '#{tell_term_process} to keystroke \"n\" using command down' \
+                  -e 'delay 1' \
+                  -e "#{tell_term_app.gsub('"', '\\"')} to tell session -1 of current \
+                      terminal to write text \\"#{connection_command(addr)}\\"" \
+                  -e '#{tell_term_process} to keystroke return using command down'
+          BASH
+        else Sesh.format_command connection_command(addr) end
       when 'Terminal' then Sesh.format_command connection_command(addr)
       end
     end
 
     def enslave_peer!
-      puts Sesh.format_and_run_command <<-BASH
-      ssh #{@options[:remote_addr]} -t "sesh connect -p #{@project} -R #{@options[:local_addr]}" 
-      BASH
-      $?
+      system %Q[ssh #{@options[:remote_addr]} -t "sesh connect -p #{@project} -R #{@options[:local_addr]}"]
     end
   end
 end

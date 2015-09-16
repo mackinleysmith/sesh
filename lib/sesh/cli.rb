@@ -47,17 +47,30 @@ module Sesh
         opts.on("-p", "--project=project", 'Project') {|v|
           parsed_options[:project] = v }
 
+        # Options for "new" command
+        opts.on('-T', '--template=path', 'Path to Tmuxinator Template') {|v|
+          if @command == 'new' then parsed_options[:template] = v
+          else Logger.fatal('Unrecognized option --template.') end }
+
+        # Options for "connect" command
+        opts.on('-n', '--new-window', 'Connect in a new terminal window') {|v|
+          Logger.fatal('Unrecognized option --new-window.') if @command != 'connect'
+          parsed_options[:ssh][:connect_in_new_window] = true }
+
+        # SSH options
         opts.on("-L", "--local-ssh-addr=addr", 'Local SSH Address') {|v|
           parsed_options[:ssh][:local_addr] = v }
         opts.on("-R", "--remote-ssh-addr=addr", 'Remote SSH Address') {|v|
           parsed_options[:ssh][:remote_addr] = v }
 
+        # Tmux options
         opts.on('-S', '--tmux-socket-file=path', 'Path to Tmux Socket File') {|v|
           # fatal("Socket file #{v} does not exist.") unless File.exist?(v)
           parsed_options[:tmux][:socket_file] = v }
         opts.on('--tmux-pids-file=path', 'Path to Tmux Pids File') {|v|
           parsed_options[:tmux][:pids_file] = v }
 
+        # Shell options for remote commands
         opts.on('-C', '--shell-command=cmd', 'Shell Command to Execute') {|v|
           parsed_options[:shell][:command] = v }
         opts.on('-P', '--shell-pane=pane', 'Pane to Execute Shell Command in') {|v|
@@ -117,6 +130,11 @@ module Sesh
           Logger.fatal 'Hint: run sesh new or specify an existing project with your commmand.'
         end
       end
+      if %w(new).include? @command
+        @options[:project]  ||= Inferences.infer_current_directory
+        @options[:template] ||= File.join(
+          File.dirname(File.expand_path(__FILE__)), 'assets', 'sample.yml' )
+      end
       @options[:tmux][:socket_file] ||= "/tmp/#{@options[:project]}.sock"
       @options[:tmux][:pids_file]   ||= "/tmp/#{@options[:project]}.pids.txt"
       if %w(enslave connect).include? @command
@@ -158,12 +176,10 @@ module Sesh
         when 'stop'    then @tmux_control.stop_project!
         when 'restart' then @tmux_control.restart_project!
         when 'new'
-          config = Tmuxinator::Config.project(@options[:project])
+          config = Tmuxinator::Config.project @options[:project]
           unless Tmuxinator::Config.exists?(@options[:project])
-            template = File.join(File.dirname(File.expand_path(__FILE__)),
-                                 "../lib/sesh/assets/sample.yml")
-            erb  = Erubis::Eruby.new(File.read(template)).result(binding)
-            File.open(config, "w") { |f| f.write(erb) }
+            erb = Erubis::Eruby.new(File.read(@options[:template])).result binding
+            File.open(config, 'w') { |f| f.write(erb) }
           end
 
           Kernel.system("#{Inferences.infer_default_editor} #{config}") ||
@@ -185,6 +201,7 @@ module Sesh
             Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
             running_projects.each do |rp|
               puts; Logger.info "Project: #{rp}", 1
+              # TODO: handle the socket file better
               tc = TmuxControl.new rp, socket_file: "/tmp/#{rp}.sock"
               tc_clients = tc.connected_client_devices
               if tc_clients.any?
@@ -211,7 +228,7 @@ module Sesh
           Logger.info "Attempting to connect #{@options[:ssh][:remote_addr]} to Sesh project '#{@options[:project]}'..."
           if @ssh_control.enslave_peer!
             Logger.success "Sesh client connected successfully."
-          else Logger.fatal 'Sesh client failed to start.' end
+          else Logger.fatal 'Sesh client failed to connect.' end
         when 'begin' then @tmux_control.begin_tmuxinator_session!
         when 'run'
           @tmux_control.do_shell_operation! @options[:shell]

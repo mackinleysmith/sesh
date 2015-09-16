@@ -9,11 +9,12 @@ module Sesh
     end
 
     def self.get_running_projects
+      # TODO: handle custom socket paths
       output = Sesh.format_and_run_command <<-BASH
         ps aux | grep tmux | grep "sesh begin" | grep -v "[g]rep" \
                | sed -e "s/.*\\/tmp\\/\\(.*\\)\\.sock.*/\\1/"
       BASH
-      output.split("\n")
+      output.lines
     end
     def already_running?; self.class.get_running_projects.include? @project end
       # `ps aux | grep "#{project_name_matcher}"`.strip.length > 0 end

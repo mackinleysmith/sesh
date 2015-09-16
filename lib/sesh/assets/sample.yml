@@ -1,7 +1,7 @@
-# ~/.tmuxinator/<%= name %>.yml
+# ~/.tmuxinator/<%= @options[:project] %>.yml
 
-name: <%= name %>
-root: ~/Sites/<%= name %>
+name: <%= @options[:project] %>
+root: ~/Sites/<%= @options[:project] %>
 
 # Optional tmux socket
 # socket_name: foo

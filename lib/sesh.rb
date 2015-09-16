@@ -30,6 +30,7 @@ module Sesh
 
   DEFAULT_OPTIONS = {
     project: nil,
+    template: nil,
     shell: {
       command: nil,
       pane: nil,
@@ -37,7 +38,8 @@ module Sesh
     },
     ssh: {
       local_addr: nil,
-      remote_addr: nil
+      remote_addr: nil,
+      connect_in_new_window: false
     },
     tmux: {
       socket_file: nil,
