@@ -298,15 +298,15 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 40 + 31) / 62)
+exe '1resize ' . ((&lines * 39 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
-exe '2resize ' . ((&lines * 20 + 31) / 62)
+exe '2resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 2resize ' . ((&columns * 135 + 136) / 272)
 exe '3resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
-exe '4resize ' . ((&lines * 19 + 31) / 62)
+exe '4resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 4resize ' . ((&columns * 136 + 136) / 272)
-exe '5resize ' . ((&lines * 19 + 31) / 62)
+exe '5resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 5resize ' . ((&columns * 135 + 136) / 272)
 argglobal
 setlocal fdm=manual
@@ -318,7 +318,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 57 - ((20 * winheight(0) + 20) / 40)
+let s:l = 57 - ((19 * winheight(0) + 19) / 39)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -336,12 +336,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 34 - ((14 * winheight(0) + 10) / 20)
+let s:l = 40 - ((15 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-34
-normal! 070|
+40
+normal! 09|
 wincmd w
 argglobal
 edit lib/sesh/inferences.rb
@@ -354,12 +354,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 11 - ((4 * winheight(0) + 9) / 19)
+let s:l = 13 - ((0 * winheight(0) + 9) / 19)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-11
-normal! 07|
+13
+normal! 033|
 wincmd w
 argglobal
 edit lib/sesh.rb
@@ -372,12 +372,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 43 - ((8 * winheight(0) + 9) / 19)
+let s:l = 42 - ((7 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-43
-normal! 031|
+42
+normal! 032|
 wincmd w
 argglobal
 edit lib/sesh/cli.rb
@@ -390,23 +390,23 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 61 - ((12 * winheight(0) + 9) / 19)
+let s:l = 40 - ((0 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-61
-normal! 057|
+40
+normal! 038|
 wincmd w
 5wincmd w
-exe '1resize ' . ((&lines * 40 + 31) / 62)
+exe '1resize ' . ((&lines * 39 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
-exe '2resize ' . ((&lines * 20 + 31) / 62)
+exe '2resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 2resize ' . ((&columns * 135 + 136) / 272)
 exe '3resize ' . ((&lines * 19 + 31) / 62)
 exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
-exe '4resize ' . ((&lines * 19 + 31) / 62)
+exe '4resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 4resize ' . ((&columns * 136 + 136) / 272)
-exe '5resize ' . ((&lines * 19 + 31) / 62)
+exe '5resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 5resize ' . ((&columns * 135 + 136) / 272)
 tabnext 1
 if exists('s:wipebuf')
