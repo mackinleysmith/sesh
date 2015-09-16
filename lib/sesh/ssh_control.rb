@@ -34,7 +34,6 @@ module Sesh
           # TODO: come up with a non-toggling way to ensure fullscreen
           cmd += %Q[ -e '#{tell_term_process} to keystroke return using command down']
         end
-        puts "Command: #{cmd}"
         Sesh.format_command cmd
       when 'Terminal' then Sesh.format_command connection_command(addr)
       end

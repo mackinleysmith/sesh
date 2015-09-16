@@ -35,7 +35,7 @@ module Sesh
       Logger.warn "Tmux failed to start with the following error: #{output}"; false
     end
 
-    def issue_stop_command!;
+    def issue_stop_command!
       `ps -ef | grep "[t]mux -u attach-session -t #{Regexp.escape(@project)}\\$" | grep -v grep | awk '{print $2}' | xargs kill -9`
     end
 
@@ -66,6 +66,8 @@ module Sesh
     end
 
     def kill_running_processes
+      pane_count = `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" -t "#{@project}" 2>/dev/null`.strip.lines.count
+      pane_count.times{|i| move_cursor_to_pane_and_interrupt! i; sleep 0.1 }
       obtain_pids_from_session.each{|pid| kill_process! pid }
       # if File.exists? @options[:pids_file]
       #   File.readlines(@options[:pids_file]).each{|pid|
