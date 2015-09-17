@@ -1,20 +1,21 @@
 require 'sesh'
+# require 'tmuxinator'
+# require 'yaml'
 
 module Sesh
   class TmuxControl
     def initialize(project, options={})
       @project = project || Inferences::infer_project_from_current_directory
-      @options = {}.merge(DEFAULT_OPTIONS[:tmux]).merge(options)
-      @socket_file = @options[:socket_file]
+      @options = {}.merge(DEFAULT_OPTIONS[:tmux]).merge options
+      @socket_file = @options[:socket_file] || "/tmp/#{@project}.sock"
     end
 
     def self.get_running_projects
-      # TODO: handle custom socket paths
       output = Sesh.format_and_run_command <<-BASH
         ps aux | grep tmux | grep "sesh begin" | grep -v "[g]rep" \
                | sed -e "s/.*\\/tmp\\/\\(.*\\)\\.sock.*/\\1/"
       BASH
-      output.lines
+      output.lines.map(&:strip)
     end
     def already_running?; self.class.get_running_projects.include? @project end
       # `ps aux | grep "#{project_name_matcher}"`.strip.length > 0 end
@@ -60,10 +61,6 @@ module Sesh
       output += output.map{|cpid| obtain_child_pids_from_pid(cpid) - [pid] }.flatten
       output.reverse
     end
-    def store_pids_from_session!
-      File.open(@options[:pids_file], 'w') {|f|
-        obtain_pids_from_session.each{|pid| f.puts pid } }
-    end
 
     def kill_running_processes
       pane_count = `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" -t "#{@project}" 2>/dev/null`.strip.lines.count
@@ -89,7 +86,6 @@ module Sesh
       if issue_start_command! && Logger.show_progress_until(-> { already_running? })
         sleep 1
         if already_running?
-          store_pids_from_session!
           Logger.success 'Sesh started successfully.'
           puts
         else Logger.fatal 'Sesh failed to start!' end
@@ -108,7 +104,7 @@ module Sesh
     def restart_project!; stop_project!; sleep 0.5; start_project! end
 
     def connected_client_devices
-      `tmux -S "#{@socket_file}" list-clients | cut -d : -f 1 | cut -d / -f 3`.strip.lines.map(&:strip)
+      `tmux -S "#{@socket_file}" list-clients 2>/dev/null | cut -d : -f 1 | cut -d / -f 3`.strip.lines.map(&:strip)
     end
     def get_ip_from_device(devname)
       ip_line = `who -a 2> /dev/null | grep " #{devname} "`.strip
@@ -117,9 +113,9 @@ module Sesh
     end
     def get_device_from_ip(ip)
       return if ( connected_devs = connected_client_devices ).length == 0
-      who_lines = 
-        `who -a 2> /dev/null | grep #{ip == '127.0.0.1' ? ' -v "\\([.*]\\)\\$' :
-                                '"' + Regexp.escape("(#{ip})") }"`.strip.lines
+      return connected_devs.find{|d| get_ip_from_device(ip) == ip } if ip == '127.0.0.1'
+      who_lines = `who -a 2> /dev/null | grep "#{ Regexp.escape("(#{ip})") }"`.strip.lines
+      puts connected_devs.inspect
       return if who_lines.length == 0
       connected_devs.find{|d| who_lines.find{|l| l =~ / #{d} / } }
     end
@@ -145,7 +141,7 @@ module Sesh
           resolved_ip = ping_output[1].split(' from ')[1].split(': ')[0]
           disconnect_client_by_ip! resolved_ip
         else
-          puts ping_output
+          puts "Ping output: #{ping_output}"
         end
       else
         ssh_identifier =

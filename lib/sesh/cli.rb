@@ -68,11 +68,11 @@ module Sesh
           parsed_options[:ssh][:remote_addr] = v }
 
         # Tmux options
-        opts.on('-S', '--tmux-socket-file=path', 'Path to Tmux Socket File') {|v|
-          # fatal("Socket file #{v} does not exist.") unless File.exist?(v)
-          parsed_options[:tmux][:socket_file] = v }
-        opts.on('--tmux-pids-file=path', 'Path to Tmux Pids File') {|v|
-          parsed_options[:tmux][:pids_file] = v }
+        # opts.on('-S', '--tmux-socket-file=path', 'Path to Tmux Socket File') {|v|
+        #   # fatal("Socket file #{v} does not exist.") unless File.exist?(v)
+        #   parsed_options[:tmux][:socket_file] = v }
+        # opts.on('--tmux-pids-file=path', 'Path to Tmux Pids File') {|v|
+        #   parsed_options[:tmux][:pids_file] = v }
 
         # Shell options for remote commands
         opts.on('-C', '--shell-command=cmd', 'Shell Command to Execute') {|v|
@@ -139,8 +139,8 @@ module Sesh
         @options[:template] ||= File.join(
           File.dirname(File.expand_path(__FILE__)), 'assets', 'sample.yml' )
       end
-      @options[:tmux][:socket_file] ||= "/tmp/#{@options[:project]}.sock"
-      @options[:tmux][:pids_file]   ||= "/tmp/#{@options[:project]}.pids.txt"
+      # @options[:tmux][:socket_file] ||= "/tmp/#{@options[:project]}.sock"
+      # @options[:tmux][:pids_file]   ||= "/tmp/#{@options[:project]}.pids.txt"
       if %w(enslave connect).include? @command
         @options[:ssh][:local_addr] ||= Sesh::Inferences.infer_local_ssh_addr
         if @options[:ssh][:remote_addr].nil? && ARGV.any?
@@ -205,8 +205,7 @@ module Sesh
             Logger.success "#{pcount} project#{pcount>1 ? 's':''} currently running:"
             running_projects.each do |rp|
               puts; Logger.info "Project: #{rp}", 1
-              # TODO: handle the socket file better
-              tc = TmuxControl.new rp, socket_file: "/tmp/#{rp}.sock"
+              tc = TmuxControl.new rp
               tc_clients = tc.connected_client_devices
               if tc_clients.any?
                 Logger.success "Connected Client Devices:", 2

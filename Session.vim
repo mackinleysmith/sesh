@@ -8,7 +8,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +2 lib/sesh/version.rb
+badd +3 lib/sesh/version.rb
 badd +1 ~/Sites/energy_innovation_award/index.html
 badd +1 ~/Sites/energy_innovation_award/css/custom.css
 badd +1 ~/Sites/energy_innovation_award/about.html
@@ -269,10 +269,10 @@ badd +7 ~/Sites/polygallery/lib/polygallery.rb
 badd +12 ~/Sites/polygallery/lib/polygallery/paperclip_integration.rb
 badd +172 lib/sesh/cli.rb
 badd +18 lib/sesh/inferences.rb
-badd +22 lib/sesh/assets/sample.yml
+badd +13 lib/sesh/assets/sample.yml
 badd +74 lib/sesh/tmux_control.rb
 badd +15 lib/sesh/ssh_control.rb
-badd +0 lib/sesh.rb
+badd +1 lib/sesh.rb
 badd +32 sesh.gemspec
 argglobal
 silent! argdel *
@@ -302,18 +302,18 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
-exe '2resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 136 + 136) / 272)
-exe '3resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
-exe '4resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 4resize ' . ((&columns * 135 + 136) / 272)
-exe '5resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 5resize ' . ((&columns * 136 + 136) / 272)
-exe '6resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 6resize ' . ((&columns * 135 + 136) / 272)
+exe '1resize ' . ((&lines * 16 + 25) / 50)
+exe 'vert 1resize ' . ((&columns * 72 + 73) / 146)
+exe '2resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 2resize ' . ((&columns * 72 + 73) / 146)
+exe '3resize ' . ((&lines * 16 + 25) / 50)
+exe 'vert 3resize ' . ((&columns * 73 + 73) / 146)
+exe '4resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 4resize ' . ((&columns * 73 + 73) / 146)
+exe '5resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 5resize ' . ((&columns * 73 + 73) / 146)
+exe '6resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 6resize ' . ((&columns * 72 + 73) / 146)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -324,12 +324,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 10) / 20)
+let s:l = 3 - ((1 * winheight(0) + 8) / 16)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+3
+normal! 03|
 wincmd w
 argglobal
 edit lib/sesh/tmux_control.rb
@@ -342,12 +342,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 74 - ((6 * winheight(0) + 9) / 19)
+let s:l = 113 - ((11 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-74
-normal! 033|
+113
+normal! 018|
 wincmd w
 argglobal
 edit lib/sesh/ssh_control.rb
@@ -360,12 +360,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 37 - ((15 * winheight(0) + 10) / 20)
+let s:l = 38 - ((10 * winheight(0) + 8) / 16)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-37
-normal! 09|
+38
+normal! 036|
 wincmd w
 argglobal
 edit lib/sesh/inferences.rb
@@ -378,12 +378,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 13 - ((0 * winheight(0) + 9) / 19)
+let s:l = 22 - ((9 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-13
-normal! 033|
+22
+normal! 068|
 wincmd w
 argglobal
 edit lib/sesh.rb
@@ -396,12 +396,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 42 - ((7 * winheight(0) + 9) / 19)
+let s:l = 41 - ((11 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-42
-normal! 032|
+41
+normal! 023|
 wincmd w
 argglobal
 edit lib/sesh/cli.rb
@@ -414,25 +414,26 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 44 - ((18 * winheight(0) + 9) / 19)
+let s:l = 210 - ((1 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-44
-normal! 025|
+210
+normal! 032|
 wincmd w
-exe '1resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
-exe '2resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 136 + 136) / 272)
-exe '3resize ' . ((&lines * 20 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
-exe '4resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 4resize ' . ((&columns * 135 + 136) / 272)
-exe '5resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 5resize ' . ((&columns * 136 + 136) / 272)
-exe '6resize ' . ((&lines * 19 + 31) / 62)
-exe 'vert 6resize ' . ((&columns * 135 + 136) / 272)
+2wincmd w
+exe '1resize ' . ((&lines * 16 + 25) / 50)
+exe 'vert 1resize ' . ((&columns * 72 + 73) / 146)
+exe '2resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 2resize ' . ((&columns * 72 + 73) / 146)
+exe '3resize ' . ((&lines * 16 + 25) / 50)
+exe 'vert 3resize ' . ((&columns * 73 + 73) / 146)
+exe '4resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 4resize ' . ((&columns * 73 + 73) / 146)
+exe '5resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 5resize ' . ((&columns * 73 + 73) / 146)
+exe '6resize ' . ((&lines * 15 + 25) / 50)
+exe 'vert 6resize ' . ((&columns * 72 + 73) / 146)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

@@ -42,10 +42,7 @@ module Sesh
       connect_in_new_window: false,
       connect_fullscreen: false
     },
-    tmux: {
-      socket_file: nil,
-      pids_file: nil
-    }
+    tmux: { socket_file: nil }
   }
   POSSIBLE_CONFIG_LOCATIONS = %w( sesh_config.yml config/sesh.yml )
 
