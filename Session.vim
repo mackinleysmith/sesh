@@ -377,12 +377,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 3 - ((2 * winheight(0) + 6) / 12)
+let s:l = 1 - ((0 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3
-normal! 0
+1
+normal! 024|
 wincmd w
 argglobal
 edit lib/sesh/version.rb
@@ -395,12 +395,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 3 - ((1 * winheight(0) + 6) / 12)
+let s:l = 3 - ((2 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 3
-normal! 01|
+normal! 03|
 wincmd w
 argglobal
 edit lib/sesh/tmux_control.rb
@@ -413,12 +413,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 185 - ((5 * winheight(0) + 5) / 11)
+let s:l = 184 - ((4 * winheight(0) + 5) / 11)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-185
-normal! 09|
+184
+normal! 044|
 wincmd w
 argglobal
 edit lib/sesh/ssh_control.rb
