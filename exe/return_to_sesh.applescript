@@ -1,6 +1,8 @@
 #!/usr/bin/env osascript
 
-tell application "System Events" to set frontApp to the name of the first application process whose frontmost is true
+tell application "System Events"
+  set frontApp to the name of the first application process whose frontmost is true
+end tell
 if frontApp is "iTerm"
   tell application "iTerm" to set frontWindow to the index of the front window
   set loops to 0
@@ -19,3 +21,4 @@ if frontApp is "iTerm"
     tell application "System Events" to tell process "iTerm" to perform action "AXRaise" of window 1
   end if
 end if
+

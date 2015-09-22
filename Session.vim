@@ -413,12 +413,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 182 - ((0 * winheight(0) + 5) / 11)
+let s:l = 185 - ((5 * winheight(0) + 5) / 11)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-182
-normal! 055|
+185
+normal! 09|
 wincmd w
 argglobal
 edit lib/sesh/ssh_control.rb
@@ -492,7 +492,6 @@ normal! zt
 167
 normal! 032|
 wincmd w
-3wincmd w
 exe '1resize ' . ((&lines * 12 + 25) / 51)
 exe 'vert 1resize ' . ((&columns * 102 + 102) / 204)
 exe '2resize ' . ((&lines * 12 + 25) / 51)
