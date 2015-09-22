@@ -180,12 +180,13 @@ module Sesh
                     else "#{options[:rspec_prefix]} rspec" end
         options[:command] ||= "#{rspec_cmd} #{options[:spec]}"
       end
-      if options[:and_return]
-        options[:command] = "return_to_sesh &; #{options[:command]}"
-      end
+      # if options[:and_return]
+      #   options[:command] = "return_to_sesh &; #{options[:command]}"
+      # end
       inferred_location = Inferences.infer_tmux_location
       if options[:pane].nil?
-        if inferred_location[:project] == @project then system options[:command]
+        if inferred_location[:project] == @project
+          system options[:command]
         else interrupt_and_send_command_to_project! options[:command] end
       else
         if inferred_location == { project: @project, pane: options[:pane] }

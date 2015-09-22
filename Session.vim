@@ -380,12 +380,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 7) / 15)
+let s:l = 2 - ((1 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+2
+normal! 018|
 wincmd w
 argglobal
 edit exe/sesh
@@ -495,6 +495,7 @@ normal! zt
 94
 normal! 032|
 wincmd w
+3wincmd w
 exe '1resize ' . ((&lines * 15 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 102 + 136) / 272)
 exe '2resize ' . ((&lines * 14 + 31) / 62)
