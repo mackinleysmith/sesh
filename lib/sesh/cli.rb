@@ -81,6 +81,10 @@ module Sesh
           parsed_options[:shell][:pane] = v }
         opts.on('--spec-path=path', 'Path to Spec File to Run') {|v|
           parsed_options[:shell][:spec] = v }
+        opts.on('--rspec-prefix=prefix', 'Prefix for rspec command') {|v|
+          parsed_options[:shell][:rspec_prefix] = v }
+        opts.on('--and-return', 'Return after Execution') {|v|
+          parsed_options[:shell][:and_return] = true }
 
         # # target_opts = DEPLOYMENT_TARGETS.join '|'
         # opts.on("-T", "--target=target", 'Titanium Deployment Target') do |v|
@@ -160,6 +164,11 @@ module Sesh
         end
       end
       # TODO: parse a spec file
+      if @command == 'rspec' && @options[:shell][:spec].nil?
+        ARGV.each{|a| if a =~ /spec\//
+          @options[:shell][:spec] = a; break end } if ARGV.any?
+        @options[:shell][:spec] ||= 'spec'
+      end
       # This block should always go at the end because it eats the rest of ARGV.
       if %w(run).include?(@command) && @options[:shell][:command].nil?
         if ARGV.any?
@@ -233,10 +242,8 @@ module Sesh
             Logger.success "Sesh client connected successfully."
           else Logger.fatal 'Sesh client failed to connect.' end
         when 'begin' then @tmux_control.begin_tmuxinator_session!
-        when 'run'
+        when 'run', 'rspec'
           @tmux_control.do_shell_operation! @options[:shell]
-        when 'rspec'
-          puts "Spec: #{@options[:shell][:spec]}"
         when 'detach' then @tmux_control.disconnect_client! ARGV.join(' ')
         else
           Logger.fatal "Command not recognized!"

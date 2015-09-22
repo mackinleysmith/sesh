@@ -34,7 +34,9 @@ module Sesh
     shell: {
       command: nil,
       pane: nil,
-      spec: nil
+      spec: nil,
+      rspec_prefix: nil,
+      and_return: false
     },
     ssh: {
       local_addr: nil,

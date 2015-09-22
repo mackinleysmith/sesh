@@ -176,7 +176,13 @@ module Sesh
       move_cursor_to_pane!(pane); send_interrupt! end
     def do_shell_operation!(options=DEFAULT_OPTIONS[:shell])
       unless options[:spec].nil?
-        options[:command] ||= "spring rspec #{options[:spec]}" end
+        puts 'HEY ITS A SPEC'
+        rspec_cmd = if options[:rspec_prefix].nil? then 'rspec'
+                    else "#{options[:rspec_prefix]} rspec" end
+        options[:command] ||= "#{rspec_cmd} #{options[:spec]}" end
+      if options[:and_return]
+        options[:command] = 'return_to_sesh &; ' + options[:command]
+      end
       if options[:pane].nil?
         interrupt_and_send_command_to_project! options[:command]
       else
