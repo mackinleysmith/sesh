@@ -27,6 +27,18 @@ module Sesh
       if OS.windows? then 'notepad.exe'
       else o = `echo $EDITOR`.strip; o = 'vim' unless o.length > 0; o end
     end
+    def self.infer_tmux_project
+      tmux_session_pid = `echo $TMUX | cut -d , -f 2`.strip
+      return if tmux_session_pid.length == 0
+      tmux_process_line =
+        `ps aux | grep tmux | grep #{tmux_session_pid}`.strip.lines.first
+      return if tmux_process_line.nil?
+      tmux_process_line.split('-s ')[-1].split(' -n')[0]
+    end
+    def self.infer_tmux_pane
+      return if ( o = `echo $TMUX_PANE`.strip ).nil?; o[1..-1].to_i end
+    def self.infer_tmux_location; {
+      project: infer_tmux_project, pane: infer_tmux_pane } end
 
     module OS
       def OS.windows?

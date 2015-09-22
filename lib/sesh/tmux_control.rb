@@ -183,10 +183,16 @@ module Sesh
       if options[:and_return]
         options[:command] = "return_to_sesh &; #{options[:command]}"
       end
+      inferred_location = Inferences.infer_tmux_location
       if options[:pane].nil?
-        interrupt_and_send_command_to_project! options[:command]
+        if inferred_location[:project] == @project then system options[:command]
+        else interrupt_and_send_command_to_project! options[:command] end
       else
-        interrupt_and_send_command_to_pane! options[:pane], options[:command]
+        if inferred_location == { project: @project, pane: options[:pane] }
+          system options[:command]
+        else
+          interrupt_and_send_command_to_pane! options[:pane], options[:command]
+        end
       end
     end
 
