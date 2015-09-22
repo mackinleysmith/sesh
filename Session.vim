@@ -325,6 +325,7 @@ badd +18 exe/return_to_sesh.applescript
 badd +1 \'/Users/smit1625/Sites/sesh/exe/return_to_sesh.applescript\'
 badd +2 exe/return_to_sesh
 badd +3 exe/sesh
+badd +4 Gemfile
 argglobal
 silent! argdel *
 edit lib/sesh/version.rb
@@ -350,7 +351,10 @@ wincmd w
 wincmd w
 wincmd _ | wincmd |
 vsplit
-1wincmd h
+wincmd _ | wincmd |
+vsplit
+2wincmd h
+wincmd w
 wincmd w
 set nosplitbelow
 set nosplitright
@@ -367,9 +371,11 @@ exe 'vert 4resize ' . ((&columns * 169 + 136) / 272)
 exe '5resize ' . ((&lines * 22 + 31) / 62)
 exe 'vert 5resize ' . ((&columns * 169 + 136) / 272)
 exe '6resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 6resize ' . ((&columns * 101 + 136) / 272)
+exe 'vert 6resize ' . ((&columns * 90 + 136) / 272)
 exe '7resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 7resize ' . ((&columns * 170 + 136) / 272)
+exe 'vert 7resize ' . ((&columns * 90 + 136) / 272)
+exe '8resize ' . ((&lines * 14 + 31) / 62)
+exe 'vert 8resize ' . ((&columns * 90 + 136) / 272)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -416,7 +422,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 114 - ((0 * winheight(0) + 7) / 14)
+let s:l = 114 - ((12 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -452,11 +458,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 41 - ((15 * winheight(0) + 11) / 22)
+let s:l = 38 - ((21 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-41
+38
 normal! 058|
 wincmd w
 argglobal
@@ -478,6 +484,24 @@ normal! zt
 normal! 074|
 wincmd w
 argglobal
+edit sesh.gemspec
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 29 - ((7 * winheight(0) + 7) / 14)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+29
+normal! 041|
+wincmd w
+argglobal
 edit lib/sesh/cli.rb
 setlocal fdm=manual
 setlocal fde=0
@@ -488,14 +512,14 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 14 - ((13 * winheight(0) + 7) / 14)
+let s:l = 8 - ((6 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-14
-normal! 032|
+8
+normal! 015|
 wincmd w
-7wincmd w
+8wincmd w
 exe '1resize ' . ((&lines * 15 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 102 + 136) / 272)
 exe '2resize ' . ((&lines * 14 + 31) / 62)
@@ -507,9 +531,11 @@ exe 'vert 4resize ' . ((&columns * 169 + 136) / 272)
 exe '5resize ' . ((&lines * 22 + 31) / 62)
 exe 'vert 5resize ' . ((&columns * 169 + 136) / 272)
 exe '6resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 6resize ' . ((&columns * 101 + 136) / 272)
+exe 'vert 6resize ' . ((&columns * 90 + 136) / 272)
 exe '7resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 7resize ' . ((&columns * 170 + 136) / 272)
+exe 'vert 7resize ' . ((&columns * 90 + 136) / 272)
+exe '8resize ' . ((&lines * 14 + 31) / 62)
+exe 'vert 8resize ' . ((&columns * 90 + 136) / 272)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

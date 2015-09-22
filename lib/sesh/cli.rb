@@ -5,7 +5,6 @@ require 'yaml'
 require 'colorize'
 require 'open3'
 require 'deep_merge'
-require 'deep_symbolize'
 
 module Sesh
   class Cli
@@ -254,5 +253,13 @@ module Sesh
 
       Logger.fatal 'You must specify a command.'
     end
+  end
+end
+
+class Object
+  def deep_symbolize
+    return self.inject({}){|memo,(k,v)| memo[k.to_sym] = v.deep_symbolize_keys; memo} if self.is_a? Hash
+    return self.inject([]){|memo,v    | memo           << v.deep_symbolize_keys; memo} if self.is_a? Array
+    return self
   end
 end
