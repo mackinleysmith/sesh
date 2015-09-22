@@ -398,7 +398,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 3 - ((1 * winheight(0) + 7) / 14)
+let s:l = 3 - ((2 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -416,12 +416,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 192 - ((12 * winheight(0) + 7) / 14)
+let s:l = 114 - ((0 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-192
-normal! 033|
+114
+normal! 081|
 wincmd w
 argglobal
 edit lib/sesh/ssh_control.rb
@@ -470,12 +470,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 45 - ((6 * winheight(0) + 7) / 14)
+let s:l = 25 - ((0 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-45
-normal! 031|
+25
+normal! 074|
 wincmd w
 argglobal
 edit lib/sesh/cli.rb
@@ -488,14 +488,14 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 94 - ((13 * winheight(0) + 7) / 14)
+let s:l = 14 - ((13 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-94
+14
 normal! 032|
 wincmd w
-3wincmd w
+7wincmd w
 exe '1resize ' . ((&lines * 15 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 102 + 136) / 272)
 exe '2resize ' . ((&lines * 14 + 31) / 62)

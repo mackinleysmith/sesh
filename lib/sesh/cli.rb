@@ -5,6 +5,7 @@ require 'yaml'
 require 'colorize'
 require 'open3'
 require 'deep_merge'
+require 'deep_symbolize'
 
 module Sesh
   class Cli
