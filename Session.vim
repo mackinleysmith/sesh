@@ -476,12 +476,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 25 - ((0 * winheight(0) + 7) / 14)
+let s:l = 43 - ((11 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-25
-normal! 074|
+43
+normal! 023|
 wincmd w
 argglobal
 edit sesh.gemspec
@@ -494,12 +494,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 29 - ((7 * winheight(0) + 7) / 14)
+let s:l = 14 - ((12 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-29
-normal! 041|
+14
+normal! 059|
 wincmd w
 argglobal
 edit lib/sesh/cli.rb
@@ -512,12 +512,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 8 - ((6 * winheight(0) + 7) / 14)
+let s:l = 262 - ((10 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
-normal! 015|
+262
+normal! 010|
 wincmd w
 8wincmd w
 exe '1resize ' . ((&lines * 15 + 31) / 62)

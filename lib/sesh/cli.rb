@@ -257,7 +257,7 @@ module Sesh
 end
 
 def deep_symbolize(h)
-  return h.inject({}){|memo,(k,v)| memo[k.to_sym] = v.deep_symbolize_keys; memo} if h.is_a? Hash
-  return h.inject([]){|memo,v    | memo           << v.deep_symbolize_keys; memo} if h.is_a? Array
+  return h.inject({}){|memo,(k,v)| memo[k.to_sym] = deep_symbolize(v); memo} if h.is_a? Hash
+  return h.inject([]){|memo,v    | memo           << deep_symbolize(v); memo} if h.is_a? Array
   return h
 end
