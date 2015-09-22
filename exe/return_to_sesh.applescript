@@ -18,7 +18,7 @@ if frontApp is "iTerm"
       activate
       set index of window frontWindow to 1
     end tell
-    tell application "System Events" to tell process "iTerm" to perform action "AXRaise" of frontWindow
+    tell application "System Events" to tell process "iTerm" to perform action "AXRaise" of the first window
   end if
 end if
 
