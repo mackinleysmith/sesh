@@ -1,2 +1,2 @@
 #!/usr/bin/env ruby
-system File.expand_path(File.join(__dir__, 'return_to_sesh.applescript'))
+system File.expand_path(File.join(__dir__, 'return_to_sesh.applescript')) + ' &'

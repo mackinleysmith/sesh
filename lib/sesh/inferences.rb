@@ -31,7 +31,7 @@ module Sesh
       tmux_session_pid = `echo $TMUX | cut -d , -f 2`.strip
       return if tmux_session_pid.length == 0
       tmux_process_line =
-        `ps aux | grep tmux | grep #{tmux_session_pid}`.strip.lines.first
+        `ps aux | grep tmux | grep -v grep | grep #{tmux_session_pid}`.strip.lines.first
       return if tmux_process_line.nil?
       tmux_process_line.split('-s ')[-1].split(' -n')[0]
     end
