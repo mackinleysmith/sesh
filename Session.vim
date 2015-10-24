@@ -1,5 +1,4 @@
 let SessionLoad = 1
-if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -8,6 +7,61 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
+badd +5 ~/Sites/teacher-impact/app/views/teachers/_profile.html.haml
+badd +87 ~/Sites/energy-innovation-award/config/database.yml
+badd +15 ~/Sites/teacher-impact/config/initializers/devise.rb
+badd +15 ~/Sites/teacher-impact/config/secrets.yml
+badd +9 ~/Sites/teacher-impact/app/views/admin/users/index.html.haml
+badd +10 ~/Sites/teacher-impact/app/views/admin/users/_table.html.haml
+badd +21 ~/Sites/teacher-impact/app/views/admin/users/_table_row.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/admin/users/_details_cell.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/admin/students/_details_cell.html.haml
+badd +21 ~/Sites/teacher-impact/app/models/user.rb
+badd +43 ~/Sites/teacher-impact/app/helpers/user_profiles_helper.rb
+badd +10 ~/Sites/teacher-impact/app/views/admin/teachers/_table_row.html.haml
+badd +6 ~/Sites/teacher-impact/app/views/admin/teachers/_details_cell.html.haml
+badd +6 ~/Sites/teacher-impact/app/views/admin/student_parents/_details_cell.html.haml
+badd +151 ~/Sites/teacher-impact/app/assets/stylesheets/bootstrap-overrides.scss
+badd +6 ~/Sites/teacher-impact/app/models/concerns/user_profile.rb
+badd +16 ~/Sites/teacher-impact/app/models/profile_view.rb
+badd +14 ~/Sites/teacher-impact/app/helpers/application_helper.rb
+badd +50 ~/Sites/teacher-impact/app/models/ability.rb
+badd +1 ~/Sites/teacher-impact/app/views/admin/students/_table_row.html.haml
+badd +13 ~/Sites/teacher-impact/app/views/admin/student_parents/_table_row.html.haml
+badd +9 ~/Sites/teacher-impact/app/controllers/application_controller.rb
+badd +1 ~/Sites/polyblock/app/assets/javascripts/polyblock/polyblock.js.coffee
+badd +25 ~/Sites/the-riverboat/app/assets/javascripts/admin/users.js.coffee
+badd +1 ~/Sites/the-riverboat/app/views/events/index.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/layouts/application.html.haml
+badd +74 ~/Sites/teacher-impact/app/views/main/home.html.haml
+badd +16 ~/Sites/teacher-impact/\[Vundle]\ Installer
+badd +828 /private/var/folders/2s/84cdz1jx6w181h6gyy_mb9dr0000gp/T/nvimg5wUrP/1
+badd +1 ~/Sites/teacher-impact/app/views/shared/_main_nav.html.haml
+badd +6 ~/Sites/teacher-impact/app/views/shared/_footer.html.haml
+badd +5 ~/Sites/teacher-impact/app/views/shared/_social_icons.html.haml
+badd +54 ~/Sites/teacher-impact/config/environments/development.rb
+badd +1 ~/Sites/teacher-impact/app/views/shared/_flash_messages.html.haml
+badd +26 ~/Sites/teacher-impact/spec/features/users_spec.rb
+badd +7 ~/Sites/teacher-impact/spec/features/students_spec.rb
+badd +12 ~/Sites/teacher-impact/app/views/devise/invitations/edit.html.haml
+badd +23 ~/Sites/teacher-impact/config/locales/en.yml
+badd +10 ~/Sites/teacher-impact/config/locales/devise.en.yml
+badd +5 ~/Sites/teacher-impact/config/locales/devise_invitable.en.yml
+badd +18 ~/Sites/teacher-impact/app/controllers/teacher_profiles_controller.rb
+badd +8 ~/Sites/teacher-impact/app/views/teacher_profiles/_form.html.haml
+badd +12 ~/Sites/teacher-impact/app/views/student_profiles/_form.html.haml
+badd +2 ~/Sites/teacher-impact/app/models/student_profile.rb
+badd +1 ~/Sites/teacher-impact/app/models/teacher_profile.rb
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_teacher_employment_fields.html.haml
+badd +22 ~/Sites/teacher-impact/app/controllers/concerns/teacher_profile_fetching.rb
+badd +3 ~/Sites/teacher-impact/app/controllers/teachers_controller.rb
+badd +1 ~/Sites/teacher-impact/app/views/teachers/show.html.haml
+badd +4 ~/Sites/teacher-impact/app/controllers/main_controller.rb
+badd +1 ~/Sites/teacher-impact/app/models/teacher.rb
+badd +19 ~/Sites/the-riverboat/app/views/admin/events/index.html.haml
+badd +3 ~/Sites/teacher-impact/app/controllers/registrations_controller.rb
+badd +5 ~/Sites/zip_search/lib/zip_search/acts_as_location.rb
+badd +15 ~/.ssh/config
 badd +13 ~/Sites/zip_search/zip_search.gemspec
 badd +1 ~/Sites/zip_search/app/models/zip_search/zip_search.rb
 badd +1 ~/Sites/zip_search/app/models/zip_search/location.rb
@@ -15,7 +69,6 @@ badd +8 ~/Sites/zip_search/lib/zip_search.rb
 badd +7 ~/Sites/zip_search/lib/zip_search/engine.rb
 badd +1 ~/Sites/zip_search/lib/zip_search/railtie.rb
 badd +4 ~/Sites/zip_search/lib/zip_search/model_helpers.rb
-badd +5 ~/Sites/zip_search/lib/zip_search/acts_as_location.rb
 badd +5 ~/Sites/zip_search/lib/zip_search/strong_params_helper.rb
 badd +4 ~/Sites/zip_search/test/dummy/config/routes.rb
 badd +1 ~/Sites/zip_search/test/dummy/app/views/main/home.html.erb
@@ -55,7 +108,7 @@ badd +1 ~/Sites/zip_search/app/assets/javascripts/zip_search/init.js
 badd +6 ~/Sites/zip_search/lib/zip_search/simple_form_helper.rb
 badd +1 \'/Users/smit1625/Sites/zip_search/app/views/zip_search/_simple_fields.html.erb\'
 badd +1 ~/Sites/zip_search/app/views/zip_search/_simple_fields.html.erb
-badd +3 lib/sesh/version.rb
+badd +1 lib/sesh/version.rb
 badd +1 ~/Sites/energy_innovation_award/index.html
 badd +1 ~/Sites/energy_innovation_award/css/custom.css
 badd +1 ~/Sites/energy_innovation_award/about.html
@@ -317,15 +370,77 @@ badd +12 ~/Sites/polygallery/lib/polygallery/paperclip_integration.rb
 badd +172 lib/sesh/cli.rb
 badd +18 lib/sesh/inferences.rb
 badd +13 lib/sesh/assets/sample.yml
-badd +74 lib/sesh/tmux_control.rb
+badd +47 lib/sesh/tmux_control.rb
 badd +15 lib/sesh/ssh_control.rb
 badd +1 lib/sesh.rb
 badd +32 sesh.gemspec
 badd +18 exe/return_to_sesh.applescript
 badd +1 \'/Users/smit1625/Sites/sesh/exe/return_to_sesh.applescript\'
-badd +2 exe/return_to_sesh
+badd +1 exe/return_to_sesh
 badd +3 exe/sesh
 badd +4 Gemfile
+badd +1 ~/Sites/teacher-impact/app/assets/stylesheets/bootstrap-variables.scss
+badd +1 ~/Sites/teacher-impact/app/models/teacher_employment.rb
+badd +1 ~/Sites/teacher-impact/app/models/school_attendance.rb
+badd +1 \'/Users/mackinleysmith/Sites/teacher-impact/app/views/teacher_profiles/_awards_and_recognitions.html.haml\'
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_awards_and_recognitions.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_comments.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_employment_history_form.html.haml
+badd +6 ~/Sites/teacher-impact/config/routes.rb
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/employment_history.html.haml
+badd +1 ~/Sites/teacher-impact/config/initializers/simple_form_bootstrap.rb
+badd +1 ~/Sites/teacher-impact/app/views/schools/_nested_fields.html.haml
+badd +85 ~/Sites/teacher-impact/Gemfile
+badd +1 ~/Sites/teacher-impact/app/models/school.rb
+badd +1 ~/Sites/teacher-impact/app/controllers/schools_controller.rb
+badd +1 ~/Sites/teacher-impact/app/assets/javascripts/schools.coffee
+badd +1 ~/Sites/teacher-impact/app/views/student_profiles/_school_attendance_fields.html.haml
+badd +1 ~/Sites/teacher-impact/db/schema.rb
+badd +4 ~/Sites/teacher-impact/app/views/teacher_profiles/_currently_teaching.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_employment_history.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_career_background.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_instructional_skills.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/teacher_profiles/_teaching_philosophy.html.haml
+badd +21 ~/Sites/teacher-impact/app/views/schools/show.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/students/_profile.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/students/show.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/student_profiles/_schools_attended.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/student_profiles/_currently_attending.html.haml
+badd +1 ~/Sites/teacher-impact/app/controllers/student_parents_controller.rb
+badd +1 ~/Sites/teacher-impact/app/views/student_parents/show.html.haml
+badd +1 ~/Sites/teacher-impact/app/controllers/student_parent_profiles_controller.rb
+badd +1 ~/Sites/teacher-impact/app/controllers/concerns/student_parent_profile_fetching.rb
+badd +12 ~/Sites/teacher-impact/app/views/student_parents/_profile.html.haml
+badd +2 ~/Sites/teacher-impact/app/views/main/search.html.haml
+badd +1 ~/Sites/teacher-impact/db/migrate/20151005205719_create_instructional_skills.rb
+badd +1 ~/Sites/teacher-impact/app/controllers/concerns/student_profile_fetching.rb
+badd +1 ~/Sites/teacher-impact/db/migrate/20151005211627_create_teacher_skills.rb
+badd +1 ~/Sites/teacher-impact/app/models/teacher_skill.rb
+badd +1 ~/Sites/teacher-impact/app/models/instructional_skill.rb
+badd +1 ~/Sites/teacher-impact/db/migrate/20151005212541_create_endorsements.rb
+badd +7 ~/Sites/teacher-impact/app/views/student_parent_profiles/_form.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/schools/_search_result.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/users/_search_result.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/users/_role_indicator.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/users/_avatar.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/schools/_avatar.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/schools/_role_indicator.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/admin/schools/_table_row.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/admin/schools/_details_cell.html.haml
+badd +1 ~/Sites/teacher-impact/app/assets/javascripts/bootstrap-tagsinput.js
+badd +1 ~/Sites/teacher-impact/app/assets/javascripts/application.js
+badd +1 ~/Sites/teacher-impact/app/assets/javascripts/teacher_profiles.coffee
+badd +15 ~/Sites/teacher-impact/app/models/endorsement.rb
+badd +1 ~/Sites/teacher-impact/app/controllers/admin/users_controller.rb
+badd +1 ~/Sites/teacher-impact/app/controllers/user_profiles_controller.rb
+badd +17 ~/Sites/teacher-impact/spec/models/user_spec.rb
+badd +1 ~/Sites/teacher-impact/app/views/devise/registrations/new.html.haml
+badd +1 ~/Sites/teacher-impact/app/views/devise/registrations/edit.html.haml
+badd +19 ~/Sites/teacher-impact/app/views/admin/base/analytics.html.haml
+badd +28 ~/Sites/teacher-impact/app/controllers/admin/charts_controller.rb
+badd +27 \[Vundle]\ Installer
+badd +23 /private/var/folders/2s/84cdz1jx6w181h6gyy_mb9dr0000gp/T/nvim9QEUgO/1
+badd +23 /var/folders/2s/84cdz1jx6w181h6gyy_mb9dr0000gp/T/nvim9QEUgO/1
 argglobal
 silent! argdel *
 edit lib/sesh/version.rb
@@ -338,14 +453,7 @@ vsplit
 1wincmd h
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-2wincmd k
-wincmd w
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
+1wincmd k
 wincmd w
 wincmd w
 wincmd _ | wincmd |
@@ -364,24 +472,20 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 15 + 31) / 62)
-exe 'vert 1resize ' . ((&columns * 181 + 136) / 272)
-exe '2resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 90 + 136) / 272)
-exe '3resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 90 + 136) / 272)
-exe '4resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 4resize ' . ((&columns * 181 + 136) / 272)
-exe '5resize ' . ((&lines * 22 + 31) / 62)
-exe 'vert 5resize ' . ((&columns * 90 + 136) / 272)
-exe '6resize ' . ((&lines * 22 + 31) / 62)
-exe 'vert 6resize ' . ((&columns * 90 + 136) / 272)
-exe '7resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 7resize ' . ((&columns * 90 + 136) / 272)
-exe '8resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 8resize ' . ((&columns * 90 + 136) / 272)
-exe '9resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 9resize ' . ((&columns * 90 + 136) / 272)
+exe '1resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
+exe '2resize ' . ((&lines * 18 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 136 + 136) / 272)
+exe '3resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
+exe '4resize ' . ((&lines * 18 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 135 + 136) / 272)
+exe '5resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 5resize ' . ((&columns * 137 + 136) / 272)
+exe '6resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 6resize ' . ((&columns * 53 + 136) / 272)
+exe '7resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 7resize ' . ((&columns * 80 + 136) / 272)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -392,48 +496,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 2 - ((1 * winheight(0) + 7) / 15)
+let s:l = 2 - ((1 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 2
-normal! 018|
-wincmd w
-argglobal
-edit exe/return_to_sesh
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 2 - ((1 * winheight(0) + 7) / 14)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-2
-normal! 080|
-wincmd w
-argglobal
-edit exe/sesh
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 3 - ((2 * winheight(0) + 7) / 14)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-3
-normal! 05|
+normal! 019|
 wincmd w
 argglobal
 edit lib/sesh/tmux_control.rb
@@ -446,12 +514,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 186 - ((0 * winheight(0) + 7) / 14)
+let s:l = 42 - ((7 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-186
-normal! 056|
+42
+normal! 049|
 wincmd w
 argglobal
 edit lib/sesh/ssh_control.rb
@@ -464,7 +532,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 38 - ((1 * winheight(0) + 11) / 22)
+let s:l = 38 - ((0 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -482,12 +550,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 40 - ((17 * winheight(0) + 11) / 22)
+let s:l = 36 - ((35 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-40
-normal! 035|
+36
+normal! 025|
 wincmd w
 argglobal
 edit lib/sesh.rb
@@ -500,11 +568,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 43 - ((11 * winheight(0) + 7) / 14)
+let s:l = 39 - ((7 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-43
+39
 normal! 023|
 wincmd w
 argglobal
@@ -518,7 +586,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 23 - ((3 * winheight(0) + 7) / 14)
+let s:l = 23 - ((3 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -536,34 +604,29 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 246 - ((6 * winheight(0) + 7) / 14)
+let s:l = 246 - ((0 * winheight(0) + 10) / 20)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 246
 normal! 019|
 wincmd w
-4wincmd w
-exe '1resize ' . ((&lines * 15 + 31) / 62)
-exe 'vert 1resize ' . ((&columns * 181 + 136) / 272)
-exe '2resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 2resize ' . ((&columns * 90 + 136) / 272)
-exe '3resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 3resize ' . ((&columns * 90 + 136) / 272)
-exe '4resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 4resize ' . ((&columns * 181 + 136) / 272)
-exe '5resize ' . ((&lines * 22 + 31) / 62)
-exe 'vert 5resize ' . ((&columns * 90 + 136) / 272)
-exe '6resize ' . ((&lines * 22 + 31) / 62)
-exe 'vert 6resize ' . ((&columns * 90 + 136) / 272)
-exe '7resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 7resize ' . ((&columns * 90 + 136) / 272)
-exe '8resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 8resize ' . ((&columns * 90 + 136) / 272)
-exe '9resize ' . ((&lines * 14 + 31) / 62)
-exe 'vert 9resize ' . ((&columns * 90 + 136) / 272)
+exe '1resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
+exe '2resize ' . ((&lines * 18 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 136 + 136) / 272)
+exe '3resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 3resize ' . ((&columns * 135 + 136) / 272)
+exe '4resize ' . ((&lines * 18 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 135 + 136) / 272)
+exe '5resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 5resize ' . ((&columns * 137 + 136) / 272)
+exe '6resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 6resize ' . ((&columns * 53 + 136) / 272)
+exe '7resize ' . ((&lines * 20 + 31) / 62)
+exe 'vert 7resize ' . ((&columns * 80 + 136) / 272)
 tabnext 1
-if exists('s:wipebuf')
+if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
 endif
 unlet! s:wipebuf
@@ -573,7 +636,9 @@ if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)
 endif
 let &so = s:so_save | let &siso = s:siso_save
-doautoall SessionLoadPost
+let g:this_session = v:this_session
 let g:this_obsession = v:this_session
+let g:this_obsession_status = 2
+doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :

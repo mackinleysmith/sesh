@@ -37,7 +37,10 @@ module Sesh
     end
 
     def issue_stop_command!
-      `ps -ef | grep "[t]mux -u attach-session -t #{Regexp.escape(@project)}\\$" | grep -v grep | awk '{print $2}' | xargs kill -9`
+      # puts 'issuing stop command...'
+      output = `ps -ef | grep "[t]mux -u attach-session -t #{Regexp.escape(@project)}\\$" | grep -v grep | awk '{print $2}' | xargs kill -9`
+      puts "stop command issued! Output: #{output}"
+      output
     end
 
     def connection_command; "tmux -S #{@socket_file} a" end
@@ -186,6 +189,7 @@ module Sesh
       inferred_location = Inferences.infer_tmux_location
       # puts "Inferred location: #{inferred_location}"
       if options[:pane].nil?
+        puts inferred_location.inspect
         if inferred_location[:project] == @project then system options[:command]
         else interrupt_and_send_command_to_project! options[:command] end
       else
