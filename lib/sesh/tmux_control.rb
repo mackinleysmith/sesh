@@ -189,14 +189,16 @@ module Sesh
       inferred_location = Inferences.infer_tmux_location
       # puts "Inferred location: #{inferred_location}"
       if options[:pane].nil?
-        puts inferred_location.inspect
+        # puts inferred_location.inspect
         if inferred_location[:project] == @project then system options[:command]
         else interrupt_and_send_command_to_project! options[:command] end
       else
         if inferred_location == { project: @project, pane: options[:pane] }
           system options[:command]
+          return $?.exitstatus
         else
           interrupt_and_send_command_to_pane! options[:pane], options[:command]
+          return 0
         end
       end
     end

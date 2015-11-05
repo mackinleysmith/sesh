@@ -7,6 +7,8 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
+badd +1 ~/Sites/teacher-impact/app/views/users/_search_result.html.haml
+badd +132 ~/Sites/the-riverboat/Gemfile
 badd +5 ~/Sites/teacher-impact/app/views/teachers/_profile.html.haml
 badd +87 ~/Sites/energy-innovation-award/config/database.yml
 badd +15 ~/Sites/teacher-impact/config/initializers/devise.rb
@@ -18,6 +20,86 @@ badd +1 ~/Sites/teacher-impact/app/views/admin/users/_details_cell.html.haml
 badd +1 ~/Sites/teacher-impact/app/views/admin/students/_details_cell.html.haml
 badd +21 ~/Sites/teacher-impact/app/models/user.rb
 badd +43 ~/Sites/teacher-impact/app/helpers/user_profiles_helper.rb
+badd +49 ~/Sites/the-riverboat/Guardfile
+badd +28 ~/Sites/the-riverboat/app/controllers/application_controller.rb
+badd +373 ~/Sites/the-riverboat/app/models/user.rb
+badd +1 ~/Sites/the-riverboat/app/views/admin/refund_requests/index.html.haml
+badd +13 ~/Sites/the-riverboat/app/views/admin/refund_requests/_table.html.haml
+badd +4 ~/Sites/the-riverboat/app/views/admin/refund_requests/_table_row.html.haml
+badd +3 ~/Sites/the-riverboat/app/views/admin/refund_requests/_details_cell.html.haml
+badd +23 ~/Sites/the-riverboat/app/controllers/admin/refund_requests_controller.rb
+badd +11 ~/Sites/the-riverboat/app/controllers/admin/payments_controller.rb
+badd +32 ~/Sites/the-riverboat/app/views/admin/affiliates/index.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/events/index.html.haml
+badd +19 ~/Sites/the-riverboat/app/views/admin/events/index.html.haml
+badd +27 ~/Sites/the-riverboat/app/views/admin/events/_management_table.html.haml
+badd +26 ~/Sites/the-riverboat/app/views/admin/tickets/checkin.html.haml
+badd +8 ~/Sites/the-riverboat/app/views/admin/event_templates/index.html.haml
+badd +10 ~/Sites/the-riverboat/app/views/admin/event_templates/_table.html.haml
+badd +5 ~/Sites/the-riverboat/app/views/admin/event_templates/_table_row.html.haml
+badd +2 ~/Sites/the-riverboat/app/views/admin/event_templates/_details_cell.html.haml
+badd +1 ~/Sites/the-riverboat/app/controllers/event_templates_controller.rb
+badd +25 ~/Sites/the-riverboat/app/controllers/admin/event_templates_controller.rb
+badd +38 ~/Sites/the-riverboat/app/views/layouts/application.html.haml
+badd +62 ~/Sites/the-riverboat/app/views/shared/_main_nav.html.haml
+badd +9 ~/Sites/the-riverboat/app/views/admin/payments/index.html.haml
+badd +12 ~/Sites/the-riverboat/app/views/admin/payments/_table.html.haml
+badd +18 ~/Sites/the-riverboat/app/views/admin/payments/_table_row.html.haml
+badd +26 ~/Sites/the-riverboat/app/views/admin/payments/_details_cell.html.haml
+badd +126 ~/Sites/the-riverboat/app/models/payment.rb
+badd +323 ~/Sites/the-riverboat/db/schema.rb
+badd +127 ~/Sites/the-riverboat/app/controllers/admin/tickets_controller.rb
+badd +9 ~/Sites/the-riverboat/app/controllers/concerns/ticket_errors.rb
+badd +1 ~/Sites/the-riverboat/app/views/admin/payments/new.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/admin/events/new.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/admin/payments/edit.html.haml
+badd +8 ~/Sites/the-riverboat/app/views/admin/payments/_form.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/tickets/_payment_errors.html.haml
+badd +5 ~/Sites/the-riverboat/app/views/payments/_new_card_fields.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/ticket_codes/_cocoon_table.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/tickets/_ticket_code_fields.html.haml
+badd +30 ~/Sites/the-riverboat/config/environments/development.rb
+badd +25 ~/Sites/the-riverboat/app/assets/javascripts/admin/users.js.coffee
+badd +70 ~/Sites/the-riverboat/app/assets/javascripts/admin/payments.js.coffee
+badd +226 ~/Sites/the-riverboat/app/models/ticket.rb
+badd +1 ~/Sites/the-riverboat/app/views/admin/timecards/reports.html.haml
+badd +146 ~/Sites/the-riverboat/app/helpers/application_helper.rb
+badd +1 ~/Sites/the-riverboat/app/views/shared/_main_footer.html.haml
+badd +2 ~/Sites/the-riverboat/config/initializers/stripe.rb
+badd +1 ~/Sites/the-riverboat/config/secrets.yml
+badd +7 ~/Sites/the-riverboat/db/migrate/20151023211612_add_purchasable_to_payments.rb
+badd +16 ~/Sites/the-riverboat/config/environments/test.rb
+badd +31 ~/Sites/the-riverboat/app/assets/javascripts/application.js
+badd +205 ~/Sites/the-riverboat/app/assets/javascripts/tickets.js.coffee
+badd +9 ~/Sites/the-riverboat/app/views/payments/_card_storage_fields.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/shared/_presubmit_errors.html.haml
+badd +1 ~/Sites/the-riverboat/app/views/payments/_stripe_errors.html.haml
+badd +18 ~/Sites/the-riverboat/app/assets/javascripts/shared.js.coffee
+badd +263 ~/Sites/the-riverboat/app/assets/stylesheets/bootstrap-overrides.scss
+badd +79 ~/Sites/the-riverboat/config/initializers/simple_form_bootstrap.rb
+badd +8 ~/Sites/the-riverboat/app/views/admin/payments/show.html.haml
+badd +4 ~/Sites/the-riverboat/app/helpers/payments_helper.rb
+badd +1 ~/Sites/the-riverboat/app/models/concerns/soft_deletable.rb
+badd +54 ~/Sites/the-riverboat/config/routes.rb
+badd +15 ~/Sites/the-riverboat/app/views/admin/event_bookings/_form.html.haml
+badd +1 ~/Sites/the-riverboat/app/assets/javascripts/admin/event_bookings.js.coffee
+badd +23 ~/Sites/the-riverboat/app/assets/javascripts/event_bookings.js.coffee
+badd +13 ~/Sites/the-riverboat/spec/models/payment_spec.rb
+badd +4 ~/Sites/the-riverboat/spec/factories/payments.rb
+badd +5 ~/Sites/the-riverboat/spec/factories/event_booking_categories.rb
+badd +5 ~/Sites/the-riverboat/spec/factories/event_bookings.rb
+badd +12 ~/Sites/the-riverboat/spec/factories/events.rb
+badd +5 ~/Sites/the-riverboat/spec/factories/photos.rb
+badd +3 ~/Sites/the-riverboat/spec/factories/prices.rb
+badd +6 ~/Sites/the-riverboat/spec/factories/promo_codes.rb
+badd +64 ~/Sites/the-riverboat/spec/factories/tickets.rb
+badd +17 ~/Sites/the-riverboat/spec/factories/users.rb
+badd +22 ~/Sites/the-riverboat/app/models/concerns/acts_as_stripe_customer.rb
+badd +174 ~/Sites/the-riverboat/spec/models/users_spec.rb
+badd +79 ~/Sites/the-riverboat/spec/controllers/tickets_controller_spec.rb
+badd +9 ~/Sites/the-riverboat/spec/controllers/twilio_controller_spec.rb
+badd +37 ~/Sites/the-riverboat/spec/features/checkin_spec.rb
+badd +7 ~/Sites/the-riverboat/app/models/timecard.rb
 badd +10 ~/Sites/teacher-impact/app/views/admin/teachers/_table_row.html.haml
 badd +6 ~/Sites/teacher-impact/app/views/admin/teachers/_details_cell.html.haml
 badd +6 ~/Sites/teacher-impact/app/views/admin/student_parents/_details_cell.html.haml
@@ -30,8 +112,6 @@ badd +1 ~/Sites/teacher-impact/app/views/admin/students/_table_row.html.haml
 badd +13 ~/Sites/teacher-impact/app/views/admin/student_parents/_table_row.html.haml
 badd +9 ~/Sites/teacher-impact/app/controllers/application_controller.rb
 badd +1 ~/Sites/polyblock/app/assets/javascripts/polyblock/polyblock.js.coffee
-badd +25 ~/Sites/the-riverboat/app/assets/javascripts/admin/users.js.coffee
-badd +1 ~/Sites/the-riverboat/app/views/events/index.html.haml
 badd +1 ~/Sites/teacher-impact/app/views/layouts/application.html.haml
 badd +74 ~/Sites/teacher-impact/app/views/main/home.html.haml
 badd +16 ~/Sites/teacher-impact/\[Vundle]\ Installer
@@ -58,7 +138,6 @@ badd +3 ~/Sites/teacher-impact/app/controllers/teachers_controller.rb
 badd +1 ~/Sites/teacher-impact/app/views/teachers/show.html.haml
 badd +4 ~/Sites/teacher-impact/app/controllers/main_controller.rb
 badd +1 ~/Sites/teacher-impact/app/models/teacher.rb
-badd +19 ~/Sites/the-riverboat/app/views/admin/events/index.html.haml
 badd +3 ~/Sites/teacher-impact/app/controllers/registrations_controller.rb
 badd +5 ~/Sites/zip_search/lib/zip_search/acts_as_location.rb
 badd +15 ~/.ssh/config
@@ -420,7 +499,6 @@ badd +1 ~/Sites/teacher-impact/app/models/instructional_skill.rb
 badd +1 ~/Sites/teacher-impact/db/migrate/20151005212541_create_endorsements.rb
 badd +7 ~/Sites/teacher-impact/app/views/student_parent_profiles/_form.html.haml
 badd +1 ~/Sites/teacher-impact/app/views/schools/_search_result.html.haml
-badd +1 ~/Sites/teacher-impact/app/views/users/_search_result.html.haml
 badd +1 ~/Sites/teacher-impact/app/views/users/_role_indicator.html.haml
 badd +1 ~/Sites/teacher-impact/app/views/users/_avatar.html.haml
 badd +1 ~/Sites/teacher-impact/app/views/schools/_avatar.html.haml
@@ -501,7 +579,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 2
-normal! 019|
+normal! 016|
 wincmd w
 argglobal
 edit lib/sesh/tmux_control.rb
@@ -514,7 +592,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 42 - ((7 * winheight(0) + 9) / 18)
+let s:l = 42 - ((14 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -550,7 +628,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 36 - ((35 * winheight(0) + 9) / 18)
+let s:l = 36 - ((34 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -611,6 +689,7 @@ normal! zt
 246
 normal! 019|
 wincmd w
+2wincmd w
 exe '1resize ' . ((&lines * 20 + 31) / 62)
 exe 'vert 1resize ' . ((&columns * 136 + 136) / 272)
 exe '2resize ' . ((&lines * 18 + 31) / 62)
