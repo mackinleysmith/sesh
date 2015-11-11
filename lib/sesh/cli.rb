@@ -243,7 +243,8 @@ module Sesh
           else Logger.fatal 'Sesh client failed to connect.' end
         when 'begin' then @tmux_control.begin_tmuxinator_session!
         when 'run', 'rspec'
-          exit @tmux_control.do_shell_operation! @options[:shell]
+          status = @tmux_control.do_shell_operation!(@options[:shell])
+          exit status || 1
         when 'detach' then @tmux_control.disconnect_client! ARGV.join(' ')
         else
           Logger.fatal "Command not recognized!"
