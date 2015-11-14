@@ -1,4 +1,5 @@
 require 'sesh'
+require 'open4'
 # require 'tmuxinator'
 # require 'yaml'
 
@@ -190,17 +191,33 @@ module Sesh
       # puts "Inferred location: #{inferred_location}"
       if options[:pane].nil?
         # puts inferred_location.inspect
-        if inferred_location[:project] == @project then system options[:command]
-        else interrupt_and_send_command_to_project! options[:command] end
+        if inferred_location[:project] != @project
+          interrupt_and_send_command_to_project! options[:command]
+          return 0
+        else do_shell_operation_here! options[:command] end
       else
-        if inferred_location == { project: @project, pane: options[:pane] }
-          system options[:command]
-          return $?.exitstatus
-        else
+        if inferred_location != { project: @project, pane: options[:pane] }
           interrupt_and_send_command_to_pane! options[:pane], options[:command]
           return 0
-        end
+        else do_shell_operation_here! options[:command] end
       end
+    end
+    def do_shell_operation_here!(cmd)
+      # system cmd
+      # STDOUT.sync = true
+      # stdin, stdout, stderr, wait_thr = Open3.popen3(*cmd.split(' '))
+      # stdin.close
+      # stdout.close
+      output = ''
+      status = Open4::popen4(cmd) do |pid, stdin, stdout, stderr|
+        stdin.close
+        puts o = stdout.read.strip; output << o
+        puts o = stderr.read.strip; output << o
+      end
+      puts "Full output: #{output}"
+      puts "Status: #{status.inspect}"
+      status.exitstatus
+      # $?.exitstatus
     end
 
     # Getter methods for passthru to SshControl class

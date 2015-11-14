@@ -29,4 +29,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'deep_merge', '~> 1.0'
   s.add_dependency 'awesome_print', '~> 1.6'
   s.add_dependency 'colorize', '~> 0.7.7'
+  s.add_dependency 'open4', '~> 1.3.4'
 end
