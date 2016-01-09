@@ -65,7 +65,8 @@ module Sesh
         other_processes += obtain_child_pids_from_pid(pid) - tmux_processes }
       puts; puts 'Other Processes:'
       other_processes.each{|pid| puts `ps aux | grep #{pid} | grep -v grep`.strip }
-      spring_processes + other_processes + tmux_processes
+      puts
+      ( spring_processes + other_processes + tmux_processes ).uniq
     end
     def obtain_child_pids_from_pid(pid)
       output = `ps -ef | grep #{pid} | grep -v grep | grep -v "sesh begin #{@project}" | awk '{print $2}'`.strip.lines.map(&:strip)
