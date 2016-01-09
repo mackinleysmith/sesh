@@ -50,24 +50,24 @@ module Sesh
     def obtain_pids_from_session
       tmux_processes =
         `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" -t "#{@project}" 2> /dev/null | grep -v tmux | awk '{print $1}'`.strip.lines.map(&:strip) +
-        `tmux -S "#{@socket_file}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" 2> /dev/null | grep -v tmux | awk '{print $1}'`.strip.lines.map(&:strip)
-      puts; puts "Tmux Processes:"
-      tmux_processes.each{|pid| puts `ps aux | grep #{pid} | grep -v grep`.strip }
+        `tmux -S "#{@socket_file}" list-panes -s -F "\#{pane_pid} \#{pane_current_command}" 2> /dev/null | grep -v tmux | grep -v "sesh begin #{@project}" | awk '{print $1}'`.strip.lines.map(&:strip)
+      # puts; puts "Tmux Processes:"
+      # tmux_processes.each{|pid| puts `ps aux | grep #{pid} | grep -v grep`.strip }
       return [] unless tmux_processes.any?
       spring_processes = []; other_processes = []
       spring_app_pid = `ps -ef | grep "[s]pring app .*| #{@project} |" | grep -v grep | awk '{print $2}'`.strip
       spring_processes += `ps -ef | grep #{spring_app_pid} | grep -v grep | grep -v "[s]pring app" | awk '{print $2}'`.strip.lines.map(&:strip) if spring_app_pid.length > 0
       spring_processes += `ps -ef | grep "[s]pring.*| #{@project} |" | grep -v grep | awk '{print $2}'`.strip.lines.map(&:strip)
-      puts; puts 'Spring Processes:'
-      spring_processes.each{|pid| puts `ps aux | grep #{pid} | grep -v grep`.strip }
+      # puts; puts 'Spring Processes:'
+      # spring_processes.each{|pid| puts `ps aux | grep #{pid} | grep -v grep`.strip }
       tmux_processes.each{|pid|
         other_processes += obtain_child_pids_from_pid(pid) - tmux_processes }
-      puts; puts 'Other Processes:'
-      other_processes.each{|pid| puts `ps aux | grep #{pid} | grep -v grep`.strip }
+      # puts; puts 'Other Processes:'
+      # other_processes.each{|pid| puts `ps aux | grep #{pid} | grep -v grep`.strip }
       spring_processes + other_processes + tmux_processes
     end
     def obtain_child_pids_from_pid(pid)
-      output = `ps -ef | grep #{pid} | grep -v grep | awk '{print $2}'`.strip.lines.map(&:strip)
+      output = `ps -ef | grep #{pid} | grep -v grep | grep -v "sesh begin #{@project}" | awk '{print $2}'`.strip.lines.map(&:strip)
       output -= [pid]
       output += output.map{|cpid| obtain_child_pids_from_pid(cpid) - [pid] }.flatten
       output.reverse
