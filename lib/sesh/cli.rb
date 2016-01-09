@@ -217,7 +217,7 @@ module Sesh
               tc = TmuxControl.new rp
               tc_clients = tc.connected_client_devices
               if tc_clients.any?
-                Logger.success "Connected Client Devices:", 2
+                Logger.success 'Connected Client Devices:', 2
                 tc_clients.each_with_index do |c, i|
                   Logger.info "#{i+1}: #{c}: #{tc.get_ip_from_device(c)}", 3
                 end
@@ -246,9 +246,8 @@ module Sesh
           status = @tmux_control.do_shell_operation!(@options[:shell])
           exit status || 1
         when 'detach' then @tmux_control.disconnect_client! ARGV.join(' ')
-        else
-          Logger.fatal "Command not recognized!"
-        end
+        when 'pids' then @tmux_control.list_running_processes
+        else Logger.fatal "Command not recognized!" end
         exit 0
       end
 
