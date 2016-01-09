@@ -81,8 +81,8 @@ module Sesh
     end
     def kill_running_processes
       pane_count = `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" -t "#{@project}" 2>/dev/null`.strip.lines.count
+      return if pane_count == 0
       pane_count.times{|i| move_cursor_to_pane_and_interrupt! i; sleep 0.1 }
-      puts "Pane count: #{pane_count}"
       sleep 1; puts 'Killing pids from session...'
       obtain_pids_from_session.each{|pid|
         puts `ps aux | grep #{pid} | grep -v grep`.strip
