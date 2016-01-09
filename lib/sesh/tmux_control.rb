@@ -1,4 +1,5 @@
 require 'sesh'
+require 'pty'
 require 'open4'
 # require 'tmuxinator'
 # require 'yaml'
@@ -69,7 +70,11 @@ module Sesh
     def kill_running_processes
       pane_count = `tmux list-panes -s -F "\#{pane_pid} \#{pane_current_command}" -t "#{@project}" 2>/dev/null`.strip.lines.count
       pane_count.times{|i| move_cursor_to_pane_and_interrupt! i; sleep 0.1 }
-      obtain_pids_from_session.each{|pid| kill_process! pid }
+      sleep 0.5; puts 'Killing pids from session...'
+      obtain_pids_from_session.each{|pid|
+        puts `ps aux | grep #{pid} | grep -v grep`.strip
+        kill_process! pid }
+      puts 'All pids from session have been killed.'
       # if File.exists? @options[:pids_file]
       #   File.readlines(@options[:pids_file]).each{|pid|
       #     puts "Killing #{pid}"
@@ -202,22 +207,22 @@ module Sesh
         else do_shell_operation_here! options[:command] end
       end
     end
-    def do_shell_operation_here!(cmd)
+    def do_shell_operation_here!(cmd, allow_zeus_retry=true)
       # system cmd
-      # STDOUT.sync = true
-      # stdin, stdout, stderr, wait_thr = Open3.popen3(*cmd.split(' '))
-      # stdin.close
-      # stdout.close
-      output = ''
-      status = Open4::popen4(cmd) do |pid, stdin, stdout, stderr|
-        stdin.close
-        puts o = stdout.read.strip; output << o
-        puts o = stderr.read.strip; output << o
+      raw = ''
+      PTY.spawn(cmd) do |reader, writer|
+        reader.sync = true
+        writer.sync = true
+        Thread.new { loop { writer.print(STDIN.getc.chr) } }
+        while (c=reader.getc)
+          raw << c
+          print c
+        end
       end
-      puts "Full output: #{output}"
-      puts "Status: #{status.inspect}"
-      status.exitstatus
-      # $?.exitstatus
+      if allow_zeus_retry && raw =~ /Could not find command "rspec /
+        return do_shell_operation_here! cmd, false
+      end
+      $?.exitstatus
     end
 
     # Getter methods for passthru to SshControl class
